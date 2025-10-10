@@ -100,3 +100,12 @@ function getLatest(index) {
     if (rPNX.length == 1) data.pnx = { version: rPNX[0].version, update: rPNX[0].update };
     return data;
 }
+
+function isOwner(index) {
+    if (getUID() <= 0) return false;
+    var pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+    var pre.set(1, index);
+    var r = pre.executeQuery();
+    if (r.length != 1) return false;
+    if (r[0].author == getUID()) return true;
+}
