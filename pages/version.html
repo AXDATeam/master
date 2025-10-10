@@ -17,7 +17,7 @@
 <div id="appbar"></div>
 <mdui-layout class="p-0 m-0">
     <mdui-layout-main class="center">
-        <div id="container" class="big-4 sm-8 pr-1">
+        <div id="container" class="big-6 sm-8 pr-1">
             <div class="ver-center">
                 <div class="title v-name"></div>
                 <div class="row-right">
@@ -26,6 +26,13 @@
                 </div>
             </div>
             <mdui-linear-progress class="load"></mdui-linear-progress>
+
+            <mdui-card variant="outlined" class="p-1 m-1 full-w incompatible-card hide">
+                <p class="ver-center">
+                    <mdui-icon name="error" class="ml-2 mr-1" style="font-size:40px;color:rgb(216, 82, 82);"></mdui-icon>
+                    <text class="red l incompatible-text" lang="219"></text>
+                </p>
+            </mdui-card>
 
             <mdui-card class="full-w mt-4 info mdui-prose hide">
                 <table class="p-0">
@@ -67,8 +74,10 @@
                 </mdui-text-field>
             </mdui-card>
             <mdui-card class="mt-3 full-w p-2 info hide">
-                <mdui-text-field variant="outlined" rows="5" class="ll v-desc" ll="163" llabel="更新内容" readonly></mdui-text-field>
-            </mdui-card>    
+<!--                <mdui-text-field variant="outlined" rows="5" class="ll v-desc" ll="163" llabel="更新内容" readonly></mdui-text-field>-->
+                <strong class="l" lang="163">更新内容</strong>
+                <div class="v-desc mt-2"></div>
+            </mdui-card>
             <mdui-card class="mt-2 full-w p-2 info hide">
                 <strong class="l" lang="243">校验信息</strong>
                 <mdui-text-field variant="outlined" class="v-md5 mt-4" label="MD5" value="-" readonly></mdui-text-field>

@@ -10,9 +10,14 @@ function load() {
         dataType: "json",
         success: (resp) => {
             $(".load").hide();
-            if (checkCode(resp)) {
-                $(".info").show();
+            if (checkCode(resp)) {console.log(getFilter())
                 let data = resp.data;
+                if (!data['filter'].includes("[" + getFilter() + "]")) {
+                    $(".incompatible-card").show();
+                    $(".incompatible-text").text(lang[219].replace(/%%/g, filterList[getFilter()]));
+                    $(".down-btn").attr("disabled", true);
+                }
+                $(".info").show();
                 $(".v-name").text(data.name);
                 $(".v-version").text(version);
                 $(".v-time").text(formatDate(data.update));
@@ -21,7 +26,8 @@ function load() {
                 $(".v-sha1").val(data.sha1);
                 $(".v-sha256").val(data.sha256);
                 $(".v-sha512").val(data.sha512);
-                $(".v-desc").val(data.info == ''?lang[174]:data.info);
+//                $(".v-desc").val(data.info == ''?lang[174]:data.info);
+                $(".v-desc").html(data.info.replaceAll("\n", "<br>"));
                 $(".v-cmd").val("axda install " + index + " " + version);
                 if (data.filter.includes("[nkx]")) $(".v-filter").append("<div class='mr-2 nowrap'>CloudBurst Nukkit</div>");
                 if (data.filter.includes("[mot]")) $(".v-filter").append("<div class='mr-2 nowrap'>Nukkit-MOT</div>");
