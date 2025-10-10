@@ -610,8 +610,8 @@ function markdown(md, element, p) {
     if (md == undefined || md == "") return;
 
     if (!md.startsWith("<!--mb-->")) {
-        var user = p.user;
-        var project = p.project;
+        var user = p == undefined ? '' : p.user;
+        var project = p == undefined ? '' : p.project;;
         var converter = new showdown.Converter({ tables: true });
         var html = converter.makeHtml(md);
         element.css("height", "auto");
@@ -638,8 +638,10 @@ function markdown(md, element, p) {
         element.find("img").each(function() {
             $(this).addClass("md-img");
             let src = $(this).attr("src");
-            if (!src.startsWith("https://") || !src.startsWith("http://")) {
-                $(this).attr("src", "https://github.com/" + user + "/" + project + "/raw/master/" + src);
+            if (user != '') {
+                if (!src.startsWith("https://") || !src.startsWith("http://")) {
+                    $(this).attr("src", "https://github.com/" + user + "/" + project + "/raw/master/" + src);
+                }
             }
         });
         element.find("table").each(function() {
