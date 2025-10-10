@@ -1,0 +1,4 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+include("/api/v2/includes/password.hsp");
+

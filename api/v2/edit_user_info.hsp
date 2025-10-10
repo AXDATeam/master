@@ -1,0 +1,96 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+include("/api/v2/includes/default_sign.hsp");
+include("/api/v2/includes/password.hsp");
+data.data = {};
+
+if (getUID() == 0) {
+    data.code = 4003;
+} else {
+    var post = getPost();
+    if (post.type == "name") editName(post.name.trim());
+    if (post.type == "sign") editSign(post.sign.trim());
+    if (post.type == "notify") setNotify(post.notify);
+    if (post.type == "show") setShow(post.show);
+    if (post.type == "password") setPassword(post.pwd_old.trim(), post.pwd_new.trim());
+}
+echo(data);
+
+function editName(name) {
+    if (name.length < 2 || name.length > 20) {
+        data.code = 4203;
+        data.msg = 113;
+        return;
+    }
+    var pre = db.prepare("SELECT `uid` FROM `axda-user` WHERE `name` = ?;");
+    pre.set(1, name);
+    var r = pre.executeQuery();
+    if (r.length != 0) {
+        data.code = 4204;
+        data.msg = 116;
+        return;
+    }
+    var d = {};
+    d.name = name;
+    dbx.update("axda-user", d, "uid", getUID());
+    data.data.name = name;
+    _SESSION["name"] = name;
+}
+function editSign(sign) {
+    if (sign.length > 100) {
+        data.code = 4204;
+        data.msg = 113;
+        return;
+    }
+    var s = sign;
+    if (sign == "" || sign == undefined) {
+        s = default_sign;
+    }
+    var d = {};
+    d.sign = s;
+    dbx.update("axda-user", d, "uid", getUID());
+    data.data.sign = s;
+    _SESSION["sign"] = s;
+}
+function setNotify(v) {
+    var d = {};
+    d.notify = v;
+    db.trans();
+    dbx.update("axda-user", d, "uid", getUID());
+    data.data.notify = v;
+    dbx.update("axda-following", {notify: v}, "uid", getUID());
+    db.commit();
+}
+function setShow(v) {
+    var d = {};
+    d["show-info"] = v;
+    dbx.update("axda-user", d, "uid", getUID());
+    data.data.show = v;
+}
+function setPassword(pwd_old, pwd_new) {
+    if (pwd_new.length < 8) {
+        data.code = 4402;
+        data.msg = 65;
+        return;
+    }
+    var pre = db.prepare("SELECT `password` FROM `axda-user` WHERE `uid` = ?;");
+    pre.set(1, getUID());
+    var p = pre.executeQuery()[0]['password'];
+    pre.close();
+    if (p == "OAUTH_PASSWORD") {
+        var d = {};
+        d.password = hashPwd(pwd_new);
+        dbx.update("axda-user", d, "uid", getUID());
+        data.msg = 43;
+        return;
+    }
+    if (auth(getUID(), pwd_old)) {
+        var d = {};
+        d.password = hashPwd(pwd_new);
+        dbx.update("axda-user", d, "uid", getUID());
+        data.msg = 43;
+    } else {
+        data.code = 4401;
+        data.msg = 115;
+    }
+}

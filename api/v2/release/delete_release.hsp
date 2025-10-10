@@ -1,0 +1,14 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+var post = getPost();
+var pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+pre.set(1, post.index);
+var r = pre.executeQuery();
+if (r[0]["author"] == getUID()) {
+    dbx.update("axda-release", {status:2}, "rid", post.rid);
+} else {
+    data.code = 6000;
+}
+
+echo(data);

@@ -1,0 +1,23 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+
+var http = module("Http");
+var post = getPost();
+try {
+    var html = http.get(post.url) + "";
+    var regex = /<article class="markdown-body entry-content container-lg" itemprop="text">(.*?)<\/article>/;
+    var ss = `<article class="markdown-body entry-content container-lg" itemprop="text">`;
+    var se = `</article>`;
+    var s = html.indexOf(ss) + ss.length;
+    var e = html.indexOf(se, s);
+    html = html.substring(s, e);
+    html = html.replaceAll("href=\"/", "href=\"https://github.com/");
+    html = html.replaceAll("<a ", "<a target=\"_blank\"");
+
+    data.data = {}
+    data.data.html = html;
+} catch(e) {
+    data.code = 5002;
+    data.msg = 130;
+}
+echo(data);

@@ -1,0 +1,44 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+var post = getPost();
+
+data.data = {
+    name: getName(),
+    version: post.version,
+};
+if (data.data.name != undefined) {
+    let pre = db.prepare("SELECT * FROM `axda-app` WHERE `index` = ? AND `version` = ? AND `status` = 1;");
+    pre.set(1, post.index);
+    pre.set(2, post.version);
+    let r = pre.executeQuery();
+    if (r.length >= 1) {
+        data.data.update = r[0].update;
+        data.data.version = post.version;
+        data.data.size = r[0].size;
+        data.data.md5 = r[0].md5;
+        data.data.sha1 = r[0].sha1;
+        data.data.sha256 = r[0].sha256;
+        data.data.sha512 = r[0].sha512;
+        data.data.info = r[0].description;
+        data.data.filter = r[0].filter;
+    } else {
+        data.code = 4005;
+        data.msg = 121;
+    }
+} else {
+    data.code = 4004;
+    data.msg = 121;
+}
+
+echo(data);
+
+function getName() {
+    let pre = db.prepare("SELECT `name` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+    pre.set(1, post.index);
+    var r = pre.executeQuery();
+    if (r.length >= 1) {
+        return r[0].name;
+    }
+    return null;
+}

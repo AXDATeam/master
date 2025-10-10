@@ -1,0 +1,49 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+include("api/v2/includes/plugin_common.hsp");
+include("api/v2/includes/readme.hsp");
+
+var post = getPost();
+// try {
+    if (getUID() > 0) {
+        save(post);
+    } else {
+        data.code = 4003;
+    }
+// } catch(e) {
+//     data.code = 4605;
+// }
+echo(data);
+
+function save(post) {
+    post = formatData(post);
+    if (!checkTitle(post.title.trim())) {
+        data.code = 4606;
+        data.item = "title";
+        return;
+    }
+    if (!checkDescription(post.description.trim())) {
+        data.code = 4607;
+        data.item = "title";
+        return;
+    }
+
+    var pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+    pre.set(1, post.index);
+    var r = pre.executeQuery();
+
+    if (r[0]['author'] == getUID()) {
+        r = {
+            title: post.title,
+            description: post.description,
+            minebbs: post.minebbs == ''? null: post.minebbs,
+            git: post.github == ''? null: post.github,
+            link: JSON.stringify(post.link),
+        };
+        dbx.update("axda-plugin", r, "index", post.index, 1, 1);
+        data.to = post.index;
+    } else {
+        data.code = 4603;
+        data.msg = 123;
+    }
+}

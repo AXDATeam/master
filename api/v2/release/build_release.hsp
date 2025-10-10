@@ -1,0 +1,14 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+var post = getPost();
+var pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+pre.set(1, post.index);
+var r = pre.executeQuery();
+if (r[0]["author"] == getUID()) {
+    task("api/v2/release/build/mot.hsp", post.rid);
+} else {
+    data.code = 4003;
+}
+
+echo(data);

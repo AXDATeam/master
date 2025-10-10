@@ -1,0 +1,39 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+var http = module("Http");
+
+if (getUID == 0) {
+    data.code = 4003;
+} else {
+    var pre = db.prepare("SELECT `mail` FROM `axda-user` WHERE `uid` = ? LIMIT 1;");
+    pre.set(1, getUID());
+    var r = pre.executeQuery();
+    pre.close();
+    var head = {
+        "User-Agent": "AXDA Plotfrom-v2;MINEBBSYYDS-v114514;"
+    };
+    var url = "https://api.minebbs.com/api/openapi/v1/user/find-email?email=" + r[0]["mail"];
+    try {
+        var t = http.get(url, head, null, 10000);
+        var json = JSON.parse(t);
+        if (json.status == 2000) {
+            data.data = {};
+            data.data.username = json.data.username;
+            data.data.minebbs_url = json.data.view_url;
+            data.data.icon = json.data.avatar_url;
+            data.msg = 107;
+            var m = {};
+            m.minebbs = data.data.username;
+            m.minebbs_url = data.data.minebbs_url;
+            m.icon = data.data.icon;
+            dbx.update("axda-user", m, "uid", getUID());
+        } else {
+            data.code = 4201;
+            data.msg = 106;
+        }
+    } catch(e) {
+        data.code = 4000;
+        data.msg = 105;
+    }
+}
+echo(data);

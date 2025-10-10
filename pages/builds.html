@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <title>AXDA Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script>let theme=localStorage.getItem("theme");if(theme==undefined){theme="auto"}document.querySelector('html').classList.add('mdui-theme-'+theme);</script>
+    <script src="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.2/base64.min.js"></script>
+    <script src="https://cdn.staticfile.net/spark-md5/3.0.2/spark-md5.min.js" type="application/javascript"></script>
+</head>
+<body>
+<div class="appnav"></div>
+<div id="appbar"></div>
+<mdui-layout class="p-0 m-0">
+    <mdui-layout-main class="center">
+        <div id="container" class="big-6 sm-8 pr-1">
+            <div class="ver-center">
+                <div class="l title" lang="29">构建历史</div>
+                <div class="title mr-2">:</div>
+                <div class="title name"></div>
+                <mdui-button class="l row-right" variant="outlined" onclick="window.history.back()" lang="184">返回</mdui-button>
+            </div>
+            <div class="row ver-center">
+                <p class="l mr-4" lang="241">显示最新 50 条</p>
+                <mdui-dropdown placement="bottom">
+                    <mdui-button slot="trigger" class="dp-btn l" lang="223" variant="text">显示全部</mdui-button>
+                    <mdui-menu>
+                        <mdui-menu-item class="l" lang="223" onclick="updateBuild('all')">显示全部</mdui-menu-item>
+                        <mdui-menu-item class="l" lang="224" onclick="updateBuild('success')">只显示成功</mdui-menu-item>
+                        <mdui-menu-item class="l" lang="225" onclick="updateBuild('failed')">只显示失败</mdui-menu-item>
+                    </mdui-menu>
+                </mdui-dropdown>
+            </div>
+            <mdui-linear-progress class="load-builds"></mdui-linear-progress>
+            <div class="list">
+            </div>
+        </div>
+        <div id="foot" class="big-8 sm-8"></div>
+    </mdui-layout-main>
+</mdui-layout>
+</body>
+<script src="/js/main.js"></script>
+<script src="/js/builds.js"></script>
+</html>

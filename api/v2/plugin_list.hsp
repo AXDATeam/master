@@ -1,0 +1,17 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+if (getUID() > 0) {
+    var pre = db.prepare("SELECT `title`,`index`,`update`,`down_cmd`,`down_web`,`look`,`following` FROM `axda-plugin` WHERE `author` = ? AND `status` = 1 ORDER BY `update` DESC;");
+    pre.set(1, getUID());
+    var r = pre.executeQuery();
+    data.data = r;
+    if (data.data.update != undefined) {
+        var date = module("Date");
+        data.data.update = date.getNow() - data.data.update;
+    }
+} else {
+    data.code = 4003;
+}
+
+echo(data);

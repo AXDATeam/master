@@ -1,0 +1,59 @@
+<?hsp
+//发送通知邮件给关注者
+function sendUpdate(title, index, version, description) {
+    var notify = module("Notify@axda");
+    let pre = db.prepare("SELECT `mail` FROM `axda-following` WHERE `plugin` = ? AND `notify` = 1;");
+    pre.set(1, index);
+    let r = pre.executeQuery();
+    if (r.length > 0) {
+        let address = [];
+        for (var i in r) {
+            address.push(r[i].mail);
+        }
+        notify.update(address, title, index, version, description);
+    }
+}
+
+
+//发布新版本
+function release(description, origin, author, filter) {
+            var title = r[0].title;
+            var now = module("Date").getTime();
+            var app = module("App");
+            var info = app.getInfo(index);
+            app.push(index);
+            var row = {};
+            row.uuid = info.uuid;
+            row.index = index;
+            row.version = info.version;
+            row.update = now;
+            row.size = info.size;
+            row.author = author;
+            row.md5 = info.md5;
+            row.sha1 = info.sha1;
+            row.sha256 = info.sha256;
+            row.sha512 = info.sha512;
+            row.origin = origin;
+            row.status = 1;
+            row.description = description;
+            row.depend = JSON.stringify(info.depend);
+            //写入适用平台，数据库中如果出现非法的过滤器内容就修改此处
+            row.filter = "";
+            for (var i in filter) {
+                row.filter += ("[" + filter[i] + "]");
+            }
+            db.trans();
+            dbx.insert("axda-app", row);
+
+            var update = {
+                update: now,
+                depend: JSON.stringify(info.depend)
+            }
+            for (var i in filter) {
+                update["latest_" + filter[i]] = info.version;
+            }
+            dbx.update("axda-plugin", update, "index", index);
+            db.commit();
+            sendUpdate(title, index, info.version, row.description);
+            task("/api/v2/includes/onebot.hsp", row);
+}

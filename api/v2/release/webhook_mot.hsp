@@ -1,0 +1,14 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+let pre = db.prepare("SELECT `rid` FROM `axda-release` WHERE `token` = ? AND `status` = 1;");
+pre.set(1, _GET["token"]);
+let r = pre.executeQuery();
+if (r.length == 1) {
+    data.msg = "ok";
+    task("api/v2/release/build/mot.hsp", r[0].rid);
+} else {
+    data.code = 4003;
+    data.msg = "the token is not found."
+}
+echo(data);

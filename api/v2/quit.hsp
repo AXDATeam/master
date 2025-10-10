@@ -1,0 +1,6 @@
+<?hsp
+sessionClose();
+var data = {};
+data.code = 3002;
+data.data = {};
+echo(data);

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <title>AXDA Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script>let theme=localStorage.getItem("theme");if(theme==undefined){theme="auto"}document.querySelector('html').classList.add('mdui-theme-'+theme);</script>
+    <script src="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.2/base64.min.js"></script>
+    <script src="https://cdn.staticfile.net/spark-md5/3.0.2/spark-md5.min.js" type="application/javascript"></script>
+</head>
+<body>
+<div class="appnav"></div>
+<div id="appbar"></div>
+<mdui-layout class="p-0 m-0">
+    <mdui-layout-main class="center">
+        <div id="container" class="big-6 sm-8 pr-1 main">
+            <h2 class="theme">AXDA 用户协议</h2>
+            
+            <p><strong>修订日期：</strong>2025年6月21日</p>
+
+            <h3>一、前言</h3>
+            <p>本用户协议（以下简称“本协议”）由 AXDA 网站（以下简称“本网站”或“平台”）运营方与所有访问和使用本网站及其服务的个人或实体（以下简称“用户”）共同签订。用户在注册、访问或使用本网站提供的任何功能和服务时，即表示其已阅读、理解并同意接受本协议的所有条款。</p>
+
+            <h3>二、定义</h3>
+            <ul>
+                <li><strong>“插件开发者”</strong>：指通过本网站上传 Nukkit 插件供他人下载使用的用户。</li>
+                <li><strong>“服主”</strong>：指运行 Nukkit 服务器并可能从本网站下载插件用于其服务器的用户。</li>
+                <li><strong>“插件”</strong>：指基于 Nukkit 开发的扩展程序。</li>
+            </ul>
+
+            <h3>三、服务描述</h3>
+            <p>AXDA 是一个面向 Nukkit 社区的免费插件托管平台，主要提供以下服务：</p>
+            <ul>
+                <li>插件开发者可上传、管理其开发的插件；</li>
+                <li>服主可浏览、搜索、下载插件；</li>
+                <li>平台为插件提供基本托管仓库下载、索引、信息展示等服务。</li>
+            </ul>
+
+            <h3>四、账户注册与使用</h3>
+            <ol>
+                <li>用户需通过有效方式完成注册流程，并对其账户信息的真实性、完整性负责。</li>
+                <li>注册后，用户不得将账户出借、转让或出售给第三方。</li>
+                <li>平台有权对违反规则的账户采取冻结、封禁等措施。</li>
+            </ol>
+
+            <h3>五、插件上传规范</h3>
+            <ol>
+                <li>插件开发者必须保证所上传插件为其原创作品，或已获得合法授权进行发布。</li>
+                <li>插件不得包含任何恶意代码、后门、漏洞或其他可能危害用户设备或服务器安全的内容。</li>
+                <li>平台不承担审核插件内容的责任，但保留对违规插件进行删除的权利。</li>
+                <li>如发现插件侵权或存在安全隐患，用户可向平台举报，平台将在核实后作出处理。</li>
+            </ol>
+
+            <h3>六、责任声明</h3>
+            <ol>
+                <li>插件开发者对其上传内容负全部法律责任，平台不因插件内容问题而承担任何直接或间接责任。</li>
+                <li>服主自行决定是否使用插件，平台对因插件使用导致的服务器崩溃、数据丢失、性能下降等问题概不负责。</li>
+                <li>平台不对插件的功能性、安全性、兼容性做任何形式的担保。</li>
+            </ol>
+
+            <h3>七、知识产权</h3>
+            <ol>
+                <li>插件开发者上传的插件版权归其本人或原作者(适用于转载)所有，平台仅在技术层面提供存储与分发服务。</li>
+                <li>未经许可，任何第三方不得擅自复制、修改、传播插件内容。</li>
+            </ol>
+
+            <h3>八、隐私政策</h3>
+            <ol>
+                <li>平台尊重用户的隐私权，不会向第三方泄露用户的个人信息，除非法律另有规定或用户明确同意。</li>
+                <li>平台可能会收集必要的用户行为数据用于优化服务体验，此类数据将严格匿名化处理。</li>
+            </ol>
+
+            <h3>九、协议变更</h3>
+            <p>平台保留在必要时对本协议进行更新的权利，变更后的协议将在网站上公示。用户继续使用服务视为接受变更。</p>
+
+            <h3>十、争议解决</h3>
+            <p>因本协议引起的或与本协议有关的任何争议，双方应友好协商解决；协商不成的，提交平台所在地有管辖权的人民法院诉讼解决。</p>
+
+            <h3>十一、附则</h3>
+            <p>本协议未尽事宜，按照相关法律法规执行。本协议解释权归 AXDA 平台所有。</p>
+        </div>
+        <div id="foot" class="big-8 sm-8 main"></div>
+    </mdui-layout-main>
+</mdui-layout>
+</body>
+<script src="/js/main.js"></script>
+</html>

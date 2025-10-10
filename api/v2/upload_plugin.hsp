@@ -1,0 +1,34 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+if (getUID() > 0) {
+    try {
+        hendle();
+    } catch(e) {
+        data.code = 4662;
+    }
+}
+
+function hendle() {
+    var index = _SESSION['upload_plugin'];
+    var log = module("Log");
+    var list = getUploadFiles();
+    if (list.length == 0) return;
+    var file = list[0];
+    log.info("接收到上传文件: UID:[" + getUID() + "][" + index + "]" + file.getName() + " size:" + file.getSize());
+    if (!file.getName().endsWith(".jar")) return;
+    if (file.getSize() > 1048576000) return;
+    var app = module("App");
+    var pre = db.prepare("SELECT `index`,`name`,`author` FROM `axda-plugin` WHERE `index`=? AND `status` = 1 LIMIT 1;");
+    pre.set(1, index);
+    var r = pre.executeQuery();
+    var preApp = db.prepare("SELECT `version` FROM `axda-app` WHERE `index` = ? AND `status` = 1;");
+    preApp.set(1, index);
+    var ra = preApp.executeQuery();
+    var list = [];
+    for (var i in ra) {
+        list.push(ra[i]['version']);
+    }
+    app.upload(file, index, r[0], list);
+}
+
+

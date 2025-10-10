@@ -1,0 +1,29 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+
+var index = getPost()['index'];
+if (index != null) {
+    var pre = db.prepare("SELECT `author`,`name` FROM `axda-plugin` WHERE `index`=? AND `status` = 1 LIMIT 1;");
+    pre.set(1, index);
+    var r = pre.executeQuery();
+    if (r.length == 0 || r[0]['author'] != getUID()) {
+        data.code = 4030;
+    } else {
+        data.code = 2000;
+        _SESSION['upload_plugin'] = index;
+        var app = module("App");
+        data.data = {};
+        data.data.index = index;
+        data.data.name = r[0]['name'];
+        data.data.status = app.getStatus(index);
+        if (data.data.status == -2) {
+            info = app.getInfo(index);
+            data.data.version = info.version;
+            data.data.size = info.size;
+            data.data.depend = info.depend;
+        }
+    }
+} else {
+    data.code = 4031;
+}
+echo(data);

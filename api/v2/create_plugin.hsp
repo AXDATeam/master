@@ -1,0 +1,141 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+include("api/v2/includes/plugin_common.hsp");
+include("api/v2/includes/readme.hsp");
+
+var post = getPost();
+
+// try {
+    var p = formatData(post);
+    if (getUID() != 0) {
+        if (isVerified()) {
+            create();
+            data.to = "/manager";
+        } else {
+            data.code = 4050;
+            data.msg = 141;
+        }
+    } else {
+        data.code = 4003;
+    }
+// } catch(e) {
+//     data.error = e.stack;
+//     data.code = 4500;
+//     msg = 105;
+// }
+echo(data);
+
+function create() {
+    if (!checkIndex(p.index)) {
+        data.code = 4501;
+        data.msg = 132;
+        data.item = "index";
+        return;
+    }
+    if (!checkName(p.name)) {
+        data.code = 4501;
+        data.msg = 132;
+        data.item = "name";
+        return;
+    }
+    if (!checkTitle(p.title)) {
+        data.code = 4501;
+        data.msg = 132;
+        data.item = "title";
+        return;
+    }
+    if (!checkDescription(p.description)) {
+        data.code = 4501;
+        data.msg = 132;
+        data.item = "desc";
+        return;
+    }
+        var pre = db.prepare("SELECT * FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+        pre.set(1, p.index);
+        var r = pre.executeQuery();
+        if (r.length != 0) {
+            data.code = 4501;
+            data.msg = 131;
+            data.item = "index";
+            return;
+        }
+        pre = db.prepare("SELECT * FROM `axda-plugin` WHERE `name` = ? AND `status` = 1;");
+        pre.set(1, p.name);
+        var r = pre.executeQuery();
+        if (r.length != 0) {
+            data.code = 4501;
+            data.msg = 131;
+            data.item = "name";
+            return;
+        }
+
+        var d = {};
+        d.appid = getRandom(1000, 9999);
+        d.index = p.index;
+        d.name = p.name;
+        d.title = p.title;
+        d.description = p.description;
+        d.author = getUID();
+        d.look = 0;
+        d.down_web = 0;
+        d.down_cmd = 0;
+        d.following = 0;
+        d.lib = p.is_lib? 1: 0;
+        d.git = p.github;
+        d.readme = readme(p.github);
+        d.minebbs = p.minebbs;
+        d.link = JSON.stringify(p.link);
+        d.status = 1;
+        d.ci = 0;
+        dbx.insert("axda-plugin", d);
+        data.data = {}
+        data.data.appid = d.appid;
+        data.data.index = d.index;
+}
+
+function getRandom(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// function getKernel(data) {
+//     var k = "";
+//     for (var i in data.kernel) {
+//         if (data.kernel[i] == "nkx") k += "[nkx]";
+//         if (data.kernel[i] == "mot") k += "[mot]";
+//         if (data.kernel[i] == "pnx") k += "[pnx]";
+//     }
+//     return k;
+// }
+
+function checkIndex(index) {
+    var resp = {}
+    resp.type = 2000;
+    if (index.length < 2 || index.length > 16) {
+        resp.type = 4001;
+        return resp;
+    }
+    const regex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+    if (!regex.test(index)) {
+        resp.type = 4002
+        return resp;
+    }
+    if (index.startsWith('-') || index.endsWith('-')) {
+        resp.type = 4003
+        return resp;
+    }
+    if (/-{2,}/.test(index)) {
+        resp.type = 4004;
+        return resp;
+    }
+    return resp;
+}
+
+function isVerified() {
+    let pre = db.prepare("SELECT `verified` FROM `axda-user` WHERE `uid` = ? AND `status` = 1 LIMIT 1;");
+    pre.set(1, getUID());
+    let r = pre.executeQuery();
+    if (r.length == 1) {
+        return r[0].verified == 1;
+    }
+    return false;
+}

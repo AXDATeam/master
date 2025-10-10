@@ -1,0 +1,36 @@
+<?hsp
+
+function checkIndex(index) {
+    if (index.length < 2) return false;
+    if (index.length > 16) return false;
+    return true;
+}
+
+function formatData(data) {
+    data.title = data.title.replace(/\s+/g, " ");
+    if (data.index != undefined) {
+        data.index = data.index.replace(/\s+/g, " ").toLowerCase();
+    }
+    if (data.name != undefined) {
+        data.name = data.name.replace(/\s+/g, " ");
+    }
+    return data;
+}
+
+function checkTitle(title) {
+    if (title.length < 2) return false;
+    if (title.length > 20) return false;
+    return true;
+}
+
+function checkName(name) {
+    if (name.length < 1) return false;
+    if (name.length > 20) return false;
+    return true;
+}
+
+function checkDescription(desc) {
+    if (desc.length < 1) return false;
+    if (desc.length > 100) return false;
+    return true;
+}

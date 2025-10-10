@@ -1,0 +1,67 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+var post = getPost();
+var filter = "";
+var filters = ["nkx", "mot", "pnx"];
+if (isAuthor()) {
+    db.trans();
+    if (remove() < 1) {
+        data.code = 4856;
+    }
+    for (var i in filters) {
+        if (filter.includes(i)) {
+            let latest = getLatest(i);
+            if (latest == null) {
+                setLatest(null, null);
+            } else {
+                setLatest(latest.version, latest.update, i);
+            }
+        }
+    }
+    db.commit();
+}
+
+echo(data);
+function isAuthor() {
+    try {
+        let pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+        pre.set(1, post.index);
+        let r = pre.executeQuery();
+        if (r.length == 0) return false;
+        return r[0]['author'] == getUID();
+    } catch (e) {
+        return false;
+    }
+}
+
+function remove() {
+    let pq = db.prepare("SELECT `filter` FROM `axda-app` WHERE `uuid` = ? AND `index` = ?;");
+    pq.set(1, post.uuid);
+    pq.set(2, post.index);
+    let rq = pq.executeQuery();
+    if (rq.length > 0) {
+        filter = rq[0].filter;
+    }
+    let pre = db.prepare("UPDATE `axda-app` SET `status` = 0 WHERE `uuid` = ? AND `index` = ?;");
+    pre.set(1, post.uuid);
+    pre.set(2, post.index);
+    return pre.executeUpdate();
+}
+
+function getLatest(filter) {
+    let pre = db.prepare("SELECT `version`, `update` FROM `axda-app` WHERE `index` = ? AND `status` = 1 AND `filter` LIKE ? ORDER BY `update` DESC LIMIT 1;")
+    pre.set(1, post.index);
+    pre.set(2, "%" + filter + "%");
+    let r = pre.executeQuery();
+    if (r.length != 1) return null;
+    return r[0];
+}
+
+function setLatest(version, update, filter) {
+    let pre = db.prepare("UPDATE `axda-plugin` SET `update` = ?, `latest_ "+filter+"` = ? WHERE `index` = ? AND `status` = 1;");
+    pre.set(1, update);
+    pre.set(2, version);
+    pre.set(3, post.index);
+    pre.executeUpdate();
+}

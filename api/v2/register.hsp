@@ -1,0 +1,51 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+include("api/v2/includes/default_sign.hsp");
+var codec = module("Codec");
+var hash = module("Digest");
+var date = module("Date");
+
+var json = getPost();
+var pre = db.prepare("SELECT `uid` FROM `axda-user` WHERE `mail` = ?;");
+pre.set(1, json.mail);
+var result = pre.executeQuery();
+if (result.length == 0) {
+    var params = {};
+    params.mail = json.mail;
+    params.password = hash.sha256(json.pwd + "1919810");
+    params.name = "Steve_" + random();
+    params.sign = default_sign;
+    params.register = date.getTime();
+    params.verified = 0;
+    params.notify = 1;
+    params["show-info"] = 1;
+    params.status = 1;
+    dbx.insert("axda-user", params);
+    var pre = db.prepare("SELECT `uid`,`name`,`sign`,`icon`,`verified` FROM `axda-user` WHERE `mail` = ? LIMIT 1;");
+    pre.set(1, json.mail);
+    var r = pre.executeQuery();
+    _SESSION["uid"] = r[0]["uid"];
+    _SESSION["mail"] = params.mail;
+    _SESSION["name"] = r[0]["name"];
+    _SESSION["sign"] = r[0]["sign"];
+    _SESSION["icon"] = r[0]["icon"];
+    _SESSION["verified"] = r[0]["verified"];
+    data.code = 3001;
+    data.data = {};
+    data.data.url = "/";
+} else {
+    data.code = 4001;
+    data.msg = 103;
+}
+echo(data);
+
+function random() {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let text = '';
+    const length = 4;
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        text += characters[randomIndex];
+    }
+    return text;
+}

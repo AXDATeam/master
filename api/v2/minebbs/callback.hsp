@@ -1,0 +1,94 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+include("api/v2/includes/default_sign.hsp");
+
+if (_GET["error"] != null) {
+    addHeader("Location", "/");
+    setStatus(302);
+} else {
+
+var user_id = "9822632883787571";
+var key = "cE_vT_VFRgF4kZJxoaFgwXQLFqm8jzn7";
+
+var code = _GET['code'];
+var state = _GET['state'];
+var http = module("Http");
+var codec = module("Codec");
+var log = module("Log");
+var header = {
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Authorization": "   " + codec.base64Encode(user_id + ":" + key)
+};
+var params = {
+    client_id: user_id,
+    grant_type: "authorization_code",
+    redirect_uri: "https://" + Request.getDomain() + "/api/v2/minebbs/callback.hsp",
+    client_secret: key,
+    code: code,
+};
+var auth = JSON.parse(http.post("https://www.minebbs.com/api/oauth2/token", params, header).body());
+var head = { 
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Authorization": "Bearer " + auth.access_token,
+};
+var data = JSON.parse(http.get("https://www.minebbs.com/api/me", head).body());
+http.post("https://www.minebbs.com/api/oauth2/revoke", head);
+// echo(data);
+var pre = db.prepare("SELECT `uid`,`name`,`sign`,`icon`,`verified` FROM `axda-user` WHERE `mail`=? LIMIT 1;");
+pre.set(1, data.me.email);
+var r = pre.executeQuery();
+if (r.length > 0) {
+    log.info("MineBBS OAuth2.0 login: " + data.me.email);
+    _SESSION['uid'] = r[0].uid;
+    _SESSION["name"] = r[0].name;
+    _SESSION["sign"] = r[0].sign;
+    _SESSION["icon"] = r[0].icon;
+    _SESSION["verified"] = r[0].verified;
+    _SESSION["mail"] = data.me.email;
+    setStatus(302);
+    addHeader("Location", "/");
+} else {
+    log.info("MineBBS OAuth2.0 register: " + data.me.email);
+    var pre = db.prepare("SELECT `mail` FROM `axda-user` WHERE `name` = ?");
+    pre.set(1, data.me.username);
+    var name = data.me.username;
+    var n = pre.executeQuery();
+    if (n.length > 0) {
+        name = "Steve_" + random();
+    }
+    var params = {};
+    params.mail = data.me.email;
+    params.password = "OAUTH_PASSWORD";
+    params.name = name;
+    params.sign = default_sign;
+    params.register = module("Date").getTime();
+    params.verified = 0;
+    params.notify = 1;
+    params["show-info"] = 1;
+    params.status = 1;
+    dbx.insert("axda-user", params);
+    var pre = db.prepare("SELECT `uid`,`name`,`sign`,`icon`,`verified` FROM `axda-user` WHERE `mail` = ? LIMIT 1;");
+    pre.set(1, data.me.email);
+    var r = pre.executeQuery();
+    _SESSION["uid"] = r[0]["uid"];
+    _SESSION["mail"] = params.mail;
+    _SESSION["name"] = r[0]["name"];
+    _SESSION["sign"] = r[0]["sign"];
+    _SESSION["icon"] = r[0]["icon"];
+    _SESSION["verified"] = r[0]["verified"];
+    setStatus(302);
+    addHeader("Location", "/");
+}
+
+}
+
+function random() {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let text = '';
+    const length = 4;
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        text += characters[randomIndex];
+    }
+    return text;
+}

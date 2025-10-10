@@ -1,0 +1,30 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+sessionStart(259200);
+if (getUID() > 0) {
+    if (getPost() != undefined && getPost().update) {
+        update();
+    }
+    data.data = {};
+    data.uid = _SESSION["uid"];
+    data.data.name = _SESSION["name"];
+    data.data.sign = _SESSION["sign"];
+    data.data.icon = _SESSION["icon"];
+    data.data.mail = _SESSION["mail"];
+    data.data.uid = data.uid;
+    data.data.verified = _SESSION["verified"];
+} else {
+    data.uid = 0;
+}
+echo(data);
+
+function update() {
+    let pre = db.prepare("SELECT `name`,`sign`,`verified` FROM `axda-user` WHERE `uid` = ? LIMIT 1;");
+    pre.set(1, getUID());
+    let r = pre.executeQuery();
+    if (r.length == 1) {
+        _SESSION["name"] = r[0].name;
+        _SESSION["sign"] = r[0].sign;
+        _SESSION["verified"] = r[0].verified;
+    }
+}

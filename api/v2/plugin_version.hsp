@@ -1,0 +1,65 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+var load = 10;  //每页加载数量
+
+var index = getPost().index;
+var page = getPost().page;
+var filter = getPost().filter;
+if (page == undefined || page == 0) page = 1;
+
+var params = [];
+params.push(index);
+
+var sql = "SELECT `version`, `update`, `size`, `description`, `uuid`, `filter` FROM `axda-app` WHERE `index` = ? AND `status` = 1 ";
+if (filter != null) {
+    sql += "AND `filter` LIKE ? ";
+    params.push("%[" + filter + "]%");
+}
+sql += "ORDER BY `update` DESC LIMIT ? OFFSET ?;"
+params.push(load);
+params.push(page * load - load);
+var pre = db.prepare(sql);
+var i = 1;
+for (var key in params) {
+    pre.set(i, params[key]);
+    i++;
+}
+var r = pre.executeQuery();
+if (r.length > 0) {
+    data.data = r;
+    data.page = page;
+    for (var i in data.data) {
+        if (data.data[i]["filter"] == null) break;
+        let filter = [];
+        if (data.data[i]["filter"].includes("[nkx]")) filter.push("nkx");
+        if (data.data[i]["filter"].includes("[mot]")) filter.push("mot");
+        if (data.data[i]["filter"].includes("[pnx]")) filter.push("pnx");
+        data.data[i].filter = filter;
+    }
+} else {
+    data.code = 4004;
+}
+if (getPost().type == "manage") {
+    let info = getInfo();
+    data.name = info.name;
+    data.author = info.author;
+    if (getPost().page == 0) {
+        data.total = getTotal();
+    }
+}
+echo(data);
+
+function getInfo() {
+    let pre = db.prepare("SELECT `name`, `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+    pre.set(1, index);
+    let r = pre.executeQuery();
+    return r[0];
+}
+
+function getTotal() {
+    let pre = db.prepare("SELECT count(`uuid`) FROM `axda-app` WHERE `index` = ? AND `status` = 1;");
+    pre.set(1, index);
+    let r = pre.executeQuery();
+    return r[0]['count(`uuid`)'];
+}

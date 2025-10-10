@@ -1,0 +1,77 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+var post = getPost();
+
+var pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+pre.set(1, post.index);
+var r = pre.executeQuery();
+if (r.length != 1 || r[0].author != getUID()) {
+    data.code = 4003;
+    echo(data);
+    exit();
+}
+
+if (post.kernel.length == 0) {
+    data.code = 6001;
+    data.msg = 129;
+} else {
+    if (post.type == "motci") {
+        if (checkUrlMot(post.url)) {
+            if (post.make) {
+                mkRelease();
+            } else {
+                updateRelease();
+            }
+        } else {
+            data.code = 6002;
+            data.msg = 220;
+        }
+    }
+}
+
+echo(data);
+
+function checkUrlMot(url) {
+    if (url == undefined) return false;
+    if (url.trim() == "") return false;
+    if (url.startsWith("https://motci.cn/") || url.startsWith("http://motci.cn/")) return true;
+    return false;
+}
+
+function mkRelease() {
+    let data = {
+        index: post.index,
+        type: post.type,
+        author: getUID(),
+        url: post.url,
+        kernel: JSON.stringify(post.kernel),
+        status: 1,
+        token: getRandomString(8),
+    };
+    dbx.insert("axda-release", data);
+}
+
+function updateRelease() {
+    let pre = db.prepare("SELECT `author` FROM `axda-release` WHERE `rid` = ? AND `status` = 1;");
+    pre.set(1, post.rid);
+    let r = pre.executeQuery();
+    if (r.length == 0 || r[0].author != getUID()) {
+        data.code = 4003;
+        return;
+    }
+    let row = {
+        url: post.url,
+        kernel: JSON.stringify(post.kernel),
+    };
+    dbx.update("axda-release", row, "rid", post.rid);
+}
+
+function getRandomString(length) {
+  let result = '';
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}

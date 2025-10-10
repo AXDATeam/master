@@ -1,0 +1,51 @@
+<?hsp
+//  201610501
+var group_id = 201610501;
+setConsoleException();
+
+var http = module("Http");
+var user;
+
+var text = `插件 ${getName()} 有更新啦!
+==================
+版本: ${_ENTRY.version}
+兼容性: ${getFilter()}
+作者: ${getUser()}
+链接: https://axda.net/app/${_ENTRY.index}/version/${_ENTRY.version}
+更新内容:
+${_ENTRY.description == ""? "无更新说明": _ENTRY.description}`;
+
+var data = {
+    group_id: group_id,
+    message: text,
+};
+var header = {
+    Authorization: "Bearer StarElement",
+};
+var resp = http.post("http://s3.starelement.net:2234/send_group_msg", JSON.stringify(data), null, header, null, 3000);
+module("Log").debug(resp.body().trim());
+
+function getFilter() {
+    let text = "";
+    if (_ENTRY.filter.includes("[mot]")) text += "MOT/";
+    if (_ENTRY.filter.includes("[nkx]")) text += "NKX/";
+    if (_ENTRY.filter.includes("[pnx]")) text += "PNX";
+    
+    return text;
+}
+
+function getName() {
+    let pre = module("Database").getConnect("axda").prepare("SELECT `name`, `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+    pre.set(1, _ENTRY.index);
+    var r = pre.executeQuery();
+    user = r[0].author;
+    module("Log").debug(user);
+    return r[0].name;
+}
+
+function getUser() {
+    let pre = module("Database").getConnect("axda").prepare("SELECT `name` FROM `axda-user` WHERE `uid` = ? AND `status` = 1;");
+    pre.set(1, user);
+    var r = pre.executeQuery();
+    return r[0].name;
+}

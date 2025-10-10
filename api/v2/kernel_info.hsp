@@ -1,0 +1,43 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+var post = getPost();
+
+var pre = db.prepare("SELECT `name`,`description`,`down_web`,`title`,`latest_nkx`,`latest_pnx`,`latest_mot`,`look`,`update`,`readme` FROM `axda-plugin` WHERE `index` = 'kernel';");
+var r = pre.executeQuery();
+data.data = r[0];
+data.data.watch = watch();
+data.data.versions = getVersionCount();
+
+//用户是否关注了此插件
+if (getUID() == 0) {
+    data.data.is_watch = "offline";
+} else {
+    let pre = db.prepare("SELECT `time` FROM `axda-following` WHERE `uid` = ? AND `plugin` = 'kernel' LIMIT 1;");
+    pre.set(1, getUID());
+    let r = pre.executeQuery();
+    data.data.is_watch = r.length > 0;
+}
+
+echo(data);
+addLook();
+
+
+//获取关注总数
+function watch() {
+    let pre = db.prepare("SELECT count(`uid`) FROM `axda-following` WHERE `plugin` = 'kernel';");
+    let r = pre.executeQuery();
+    return r[0]['count(`uid`)'];
+}
+
+//增加浏览量
+function addLook() {
+    var pre = db.prepare("UPDATE `axda-plugin` SET `look` = `look` + 1 WHERE `index` = 'kernel' AND `status` = 1;");
+    pre.executeUpdate();
+}
+
+//获取版本总数
+function getVersionCount(index) {
+    let pre = db.prepare("SELECT count(`uuid`) FROM `axda-app` WHERE `index` = 'kernel' AND `status` = 1;");
+    let r = pre.executeQuery();
+    return r[0]['count(`uuid`)'];
+}

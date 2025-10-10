@@ -1,0 +1,30 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+var date = module("Date");
+
+var post = getPost();
+var uid = post.uid;
+if (uid == 0) uid = getUID();
+
+var pre = db.prepare("SELECT * FROM `axda-user` WHERE `uid` = ? LIMIT 1;");
+pre.set(1, uid);
+var r = pre.executeQuery();
+if (r.length == 0) {
+    data.code = 4401;
+} else {
+    data.data = r[0];
+    var empty_pwd = r[0].password == "OAUTH_PASSWORD";
+    delete data.data.password;
+    data.data.register = date.format("YYYY-MM-dd HH:mm:ss", r[0].register);
+    if (uid == getUID()) {
+        data.code = 2000;
+        data.data.empty_pwd = empty_pwd;
+    } else {
+        data.code = 2001;
+        delete data.data.mail;
+        delete data.data.notify;
+        delete data.data.verified;
+    }
+}
+
+echo(data);

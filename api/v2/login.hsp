@@ -1,0 +1,27 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+include("api/v2/includes/password.hsp");
+var hash = module("Digest");
+
+var post = getPost();
+var pre = db.prepare("SELECT `uid` FROM `axda-user` WHERE `status` = 1 AND `mail` = ? AND `password` = ? LIMIT 1;");
+pre.set(1, post.mail);
+pre.set(2, hashPwd(post.pwd));
+var r = pre.executeQuery();
+if (r.length == 0) {
+    data.code = 4103;
+    data.msg = 104;
+} else {
+    data.uid = r[0]["uid"];
+    var pre = db.prepare("SELECT `uid`, `mail`, `name`, `sign`, `icon`, `verified` FROM `axda-user` WHERE `uid` = ?");
+    pre.set(1, data.uid);
+    var d = pre.executeQuery();
+    data.data = d[0];
+    _SESSION["uid"] = data.uid;
+    _SESSION["mail"] = data.data.mail;
+    _SESSION["name"] = data.data.name;
+    _SESSION["sign"] = data.data.sign;
+    _SESSION["icon"] = data.data.icon;
+    _SESSION["verified"] = data.data.verified;
+}
+echo(data);

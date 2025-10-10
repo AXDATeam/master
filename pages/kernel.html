@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <title>AXDA Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- <link href="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.11.1/styles/default.min.css" rel="stylesheet"> -->
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/11.4.0/styles/atom-one-dark.min.css" type="text/css" rel="stylesheet" />
+    <script>let theme=localStorage.getItem("theme");if(theme==undefined){theme="auto"}document.querySelector('html').classList.add('mdui-theme-'+theme);</script>
+    <script src="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.2/base64.min.js"></script>
+    <script src="https://cdn.staticfile.net/spark-md5/3.0.2/spark-md5.min.js" type="application/javascript"></script>
+    <script src="https://cdn.staticfile.net/showdown/2.1.0/showdown.min.js"></script>
+    <script src="https://cdn.staticfile.net/highlight.js/11.9.0/es/highlight.min.js" type="application/javascript"></script>
+</head>
+<body>
+<div class="appnav"></div>
+<div id="appbar"></div>
+<mdui-layout class="p-0 m-0">
+    <mdui-layout-main class="center">
+        <div style="height:200px;" class="center loading">
+            <mdui-circular-progress></mdui-circular-progress>
+        </div>
+        <div id="container" class="big-6 sm-8">
+            <div id="page" class="hide">
+                <div class="row ver-center">
+                    <div class="title pl-2 pl-name">AXDA-Kernel</div>
+                    <div class="p-0 row-right">
+                        <mdui-button class="l" lang="7" icon="sim_card_download" onclick="downloadFile()">下载</mdui-button>
+                        <mdui-button-icon icon="favorite_border" selected-icon="favorite" variant="filled" class="ml-3 hide" id="pl-watch" onclick="watch()"></mdui-button-icon>
+                    </div>
+                </div>
+                <div class="p-2 pl-desc"></div>
+                <div class="ver-center mt-2 mb-2">
+                    <mdui-card variant="filled" class="ver-center pl-2">
+                        <mdui-icon name="favorite" style="font-size:24px"></mdui-icon>
+                        <strong class="m-2 pl-watch pr-1"></strong>
+                    </mdui-card>
+                    <mdui-card variant="filled" class="ver-center pl-2 ml-2">
+                        <mdui-icon name="remove_red_eye" style="font-size:24px"></mdui-icon>
+                        <strong class="m-2 pl-look pr-1"></strong>
+                    </mdui-card>
+                    <mdui-card variant="filled" class="ver-center pl-2 ml-2">
+                        <mdui-icon name="download" style="font-size:24px"></mdui-icon>
+                        <strong class="m-2 pl-down pr-1"></strong>
+                    </mdui-card>
+                    <mdui-card variant="filled" class="ver-center pl-2 ml-2">
+                        <mdui-icon name="update" style="font-size:24px"></mdui-icon>
+                        <strong class="m-2 pl-update pr-1"></strong>
+                    </mdui-card>
+                </div>
+
+                <mdui-card class="mdui-table mdui-prose m-0 pl-link">
+                    <table class="p-0">
+                        <tbody class="p-0 pl-table">
+                        <tr><th>
+                            <div class="ver-center">
+                                <mdui-icon class="mr-4 ml-2" style="font-size:32px;" src="/images/version.svg"></mdui-icon>
+                                <strong style="width:100px;" class="l" lang="14">版本号</strong>
+                                <strong class="pl-version"></strong>
+                            </div>
+                        </th></tr>
+                        <tr><th>
+                            <div class="ver-center">
+                                <mdui-icon class="mr-4 ml-2" style="font-size:32px;" name="person"></mdui-icon>
+                                <strong style="width:100px;" class="l" lang="15">作者</strong>
+                                <strong>AXDA Team</strong>
+                            </div>
+                        </th></tr>
+                        <tr><th>
+                            <div class="ver-center">
+                                <mdui-icon class="mr-4 ml-2" style="font-size:32px;" name="build_circle"></mdui-icon>
+                                <strong style="width:100px;" class="l" lang="53">兼容性</strong>
+                                <strong class="pl-kernel ver-center">
+                                    <div class='mr-2 nowrap'>CloudBurst Nukkit</div>
+                                    <div class='mr-2 nowrap'>Nukkit-MOT</div>
+                                    <div class='mr-2 nowrap'>PowerNukkitX 1.0</div>
+                                </strong>
+                            </div>
+                        </th></tr>
+                        <tr class="hide pl-git"><th>
+                            <div class="ver-center">
+                                <mdui-icon class="mr-4 ml-2" style="font-size:32px;" src="/images/github.svg"></mdui-icon>
+                                <strong style="width:100px;">Github</strong>
+                                <a href="#" target="_blank" class="pl-git-url nowrap"></a>
+                            </div>
+                        </th></tr>
+                        <tr class="hide pl-mb"><th>
+                            <div class="ver-center">
+                                <mdui-icon class="mr-4" style="font-size:26px;margin-left:12.6px;" src="/images/minebbs.svg"></mdui-icon>
+                                <strong style="width:100px;">MineBBS</strong>
+                                <a href="#" target="_blank" class="pl-mb-url nowrap"></a>
+                            </div>
+                        </th></tr>
+                        </tbody>
+                    </table>
+                </mdui-card>
+
+                <mdui-tabs class="sm-full mt-1" value="tab-version" id="tab">
+                    <mdui-tab value="tab-readme" icon="description" class="l pl-readme hide" lang="16" inline>详细信息</mdui-tab>
+                    <mdui-tab value="tab-version" icon="history" class="l" lang="17" inline>历史版本</mdui-tab>
+                    <mdui-tab value="tab-status" icon="stacked_bar_chart" class="l hide" lang="18" inline>统计</mdui-tab>
+                    <mdui-tab-panel class="p-2" slot="panel" value="tab-readme">
+                        <mdui-card class="p-4 full-w mt-4" id="readme"></mdui-card>
+                    </mdui-tab-panel>
+                    <mdui-tab-panel class="mdui-table" slot="panel" value="tab-version" id="v-table">
+                        <mdui-list-subheader style="font-size:14px;"><text class="l" lang="">共</text> <text class="pl-vt">-</text> <text class="l" lnag="172">个版本</text></mdui-list-subheader>
+                        <table>
+                            <tbody id="pl-versions">
+                            </tbody>
+                        </table>
+                        <div class="center">
+                            <mdui-button class="m-2 l" variant="elevated" id="version-more" onclick="getVersionList(page + 1);" lang="182">查看更多</mdui-button>
+                            <p class="l hide" lang="183" id="version-end">--- 没有了 ---</p>
+                        </div>
+                    </mdui-tab-panel>
+                    <mdui-tab-panel class="hide" slot="panel" value="tab-status">
+                        <div class="flex ver-center mt-3">
+                            <div class="subheader ml-4 mr-4">查看:</div>
+                            <mdui-dropdown>
+                                <mdui-button class="l" lang="21" variant="outlined" slot="trigger">最近 1 个月</mdui-button>
+                                <mdui-menu>
+                                    <mdui-menu-item class="l" lang="19">最近 24 小时</mdui-menu-item>
+                                    <mdui-menu-item class="l" lang="20">最近 1 周</mdui-menu-item>
+                                    <mdui-menu-item class="l" lang="21">最近 1 个月</mdui-menu-item>
+                                    <mdui-menu-item class="l" lang="22">最近半年</mdui-menu-item>
+                                </mdui-menu>
+                            </mdui-dropdown>
+                        </div>
+                        <div class="mt-4 row">
+                            <div class="p-2 big-4 sm-8">
+                                <mdui-card variant="filled" class="p-3 flex ver-center" style="height:64px;">
+                                    <mdui-icon name="storage"></mdui-icon>
+                                    <div class="ver-center full">
+                                        <strong class="subheader ml-4 l" lang="100">活跃服务器 :</strong>
+                                        <strong class="subheader mr-4 row-right">暂无数据</strong>
+                                    </div>
+                                </mdui-card>
+                            </div>
+                            <div class="p-2 big-4 sm-8">
+                                <mdui-card variant="filled" class="p-3 flex ver-center" style="height:64px;">
+                                    <mdui-icon name="groups" id="ic"></mdui-icon>
+                                    <div class="ver-center full">
+                                        <strong class="subheader ml-4 l" lang="101">活跃玩家 :</strong>
+                                        <strong class="subheader mr-4 row-right">暂无数据</strong>
+                                    </div>
+                                </mdui-card>
+                            </div>
+                        </div>
+                    </mdui-tab-panel>
+                </mdui-tabs>
+            </div>
+            <mdui-card class="big-6 sm-8 text-center p-4 mt-4 hide error">
+                <mdui-icon name="error" style="font-size:40px;color:rgb(216, 82, 82);"></mdui-icon>
+                <div class="mt-2 title l" lang="105" id="err-msg"></div>
+                <mdui-button onclick="goto('/')" class="l mt-4" lang="166">返回首页</mdui-button>
+            </mdui-card>
+        </div>
+        <div id="foot" class="big-8 sm-8 hide"></div>
+    </mdui-layout-main>
+</mdui-layout>
+</body>
+<script src="/js/main.js"></script>
+<script src="/js/kernel.js"></script>
+<script>
+</script>
+</html>

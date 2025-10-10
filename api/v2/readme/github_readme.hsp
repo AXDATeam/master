@@ -1,0 +1,27 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+include("api/v2/includes/readme.hsp");
+var post = getPost();
+var index = post.index;
+var path = post.path;
+if (!path.startsWith("/")) {
+    path = "/" + path;
+}
+
+var pre = db.prepare("SELECT `git`,`author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;")
+pre.set(1, index);
+var r = pre.executeQuery();
+if (r.length > 0 && r[0].author == getUID()) {
+    if (r[0].git != null && r[0].git.startsWith("https://github.com/")) {
+        data.text = readme(r[0].git, path);
+        data.git = r[0].git;
+        dbx.update("axda-plugin", { readme: data.text }, "index", index, 1);
+        data.d =1;
+    } else {
+        data.code = 4077;
+        data.msg = 246;
+    }
+} else {
+    data.code = 4003;
+}
+echo(data);

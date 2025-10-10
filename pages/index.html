@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <meta name="description" content="AXDA插件站 Nukkit免费插件托管平台">
+    <title>AXDA Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="/css/material_icons.css" rel="stylesheet">
+    <script>let theme=localStorage.getItem("theme");if(theme==undefined){theme="auto"}document.querySelector('html').classList.add('mdui-theme-'+theme);</script>
+    <script src="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.2/base64.min.js"></script>
+    <script src="https://cdn.staticfile.net/spark-md5/3.0.2/spark-md5.min.js" type="application/javascript"></script>
+</head>
+<body>
+<div class="appnav"></div>
+<div id="appbar"></div>
+<mdui-layout class="p-0 m-0">
+    <mdui-layout-main class="center">
+        <div id="container" class="big-6 sm-8 pr-1">
+            <mdui-card class="mdui-prose full p-4 mb-4">
+                <p><strong>AXDA</strong> 是面向 Nukkit 社区的免费插件托管平台，为开发者和服主提供安全、便捷的插件上传、管理和下载服务，助力开发者与服主高效协作。</p>
+                <p>欢迎加入AXDA QQ讨论群(201610501): <a href="https://qm.qq.com/q/xZ0OaMhacU" target="_blank">立即加入</a></p>
+            </mdui-card>
+            <!--              搜索栏  -->
+            <div class="text-center">
+                <mdui-text-field onkeydown="if (event.key == 'Enter') search($('#search').val());" type="text" autocomplete="off" class="ll pt-3 big-6 sm-8" ll="0" variant="outlined" label="搜索" id="search" onclick='$("#search").attr("readonly", false)' readonly>
+                    <mdui-button-icon class="mr-1" slot="end-icon" variant="filled" icon="search" onclick="search($('#search').val());"></mdui-button-icon>
+                </mdui-text-field>
+            </div>
+            <!--             排序按钮-->
+            <div class="text-center mt-3">
+                <div style="margin: auto">
+                    <mdui-segmented-button-group class="sm-full" selects="single" id="s-order">
+                        <mdui-segmented-button value="hot" class="l" lang="1" onclick="search(word, 1, true, 'hot');">最高热度</mdui-segmented-button>
+                        <mdui-segmented-button value="latest" class="l" lang="2" onclick="search(word, 1, true, 'latest');">最近更新</mdui-segmented-button>
+                    </mdui-segmented-button-group>
+                </div>
+            </div>
+            <!--             主体 -->
+            <mdui-linear-progress class="loading mt-4 hide"></mdui-linear-progress>
+            <div class="mt-4 row mdui-prose hide" id="main">
+                
+            </div>
+                        <!-- 翻页按钮 -->
+            <div id="paging"></div>
+        </div>
+        <div id="foot" class="big-8 sm-8"></div>
+    </mdui-layout-main>
+</mdui-layout>
+</body>
+<script src="/js/main.js"></script>
+<script src="/js/paging.js"></script>
+<script src="/js/index.js"></script>
+<script>
+</script>
+<script>
+</script>
+</html>

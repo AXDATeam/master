@@ -1,0 +1,17 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+
+var post = getPost();
+var mail = module("Mail");
+var value = mail.verify(post.key);
+if (value != null) {
+    var pre = db.prepare("UPDATE `axda-user` SET `verified` = 1 WHERE `mail` = ?;");
+    pre.set(1, value);
+    pre.executeUpdate();
+    data.code = 2000;
+    data.data = {};
+    data.data.mail = value;
+} else {
+    data.code = 4950;
+}
+echo(data);

@@ -1,0 +1,28 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+var post = getPost();
+
+try {
+    if (getUID() == 0) {
+        data.code = 4003;
+        exit();
+    }
+    var pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+    pre.set(1, post.index);
+    var r = pre.executeQuery();
+    if (r[0]['author'] == getUID()) {
+        var pre = db.prepare("UPDATE `axda-plugin` SET `status` = 2 WHERE `index` = ?;");
+        pre.set(1, post.index);
+        pre.executeUpdate();
+        var app = module("App");
+        app.delete(post.index);
+        _SESSION["index"] = null;
+    } else {
+        data.code = 4003;
+    }
+} catch(e) {
+    data.code = 4005;
+}
+
+echo(data);

@@ -1,0 +1,73 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+var index = getPost().index;
+var filter = getPost().filter;
+plugin(index);
+if (getPost().look) {
+    addLook(index);
+}
+
+echo(data);
+
+function plugin(index) {
+    var sql = "SELECT * FROM `axda-plugin` WHERE `index` = ? AND `status` = 1 LIMIT 1;";
+    if (getPost().look) {
+        sql = "SELECT * FROM `axda-plugin` WHERE `index` = ? AND `status` = 1 AND ? IS NOT NULL LIMIT 1;";
+    }
+    var pre = db.prepare(sql);
+    pre.set(1, index);
+    if (getPost().look) {
+        pre.set(2, "latest_" + filter);
+    }
+    var r = pre.executeQuery();
+    pre.close();
+    if (r.length > 0) {
+        var pre1 = db.prepare("SELECT `name` FROM `axda-user` WHERE `uid` = ? LIMIT 1;");
+        pre1.set(1, r[0].author);
+        var r1 = pre1.executeQuery();
+        data.data = r[0];
+        data.data.link = JSON.parse(r[0].link);
+        data.data.author_name = r1[0].name;
+        data.data.platform = getLatest(index);
+
+        //用户是否关注了此插件
+        if (getUID() == 0) {
+            data.data.is_watch = "offline";
+        } else {
+            let pre = db.prepare("SELECT `time` FROM `axda-following` WHERE `uid` = ? AND `plugin` = ? LIMIT 1;");
+            pre.set(1, getUID());
+            pre.set(2, index);
+            let r = pre.executeQuery();
+            data.data.is_watch = r.length > 0;
+        }
+
+        //获取关注总数
+        var pw = db.prepare("SELECT count(`uid`) FROM `axda-following` WHERE `plugin` = ?;");
+        pw.set(1, index);
+        var rw = pw.executeQuery();
+        data.data.watch = rw[0]['count(`uid`)'];
+        data.data.versions = getVersionCount(index);
+        data.data.depend = JSON.parse(data.data.depend);
+    } else {
+        data.code = 4004;
+        data.msg = 121;
+    }
+}
+
+
+//增加浏览量
+function addLook(index) {
+    var pre = db.prepare("UPDATE `axda-plugin` SET `look` = `look` + 1 WHERE `index` = ?;");
+    pre.set(1, index);
+    pre.executeUpdate();
+}
+
+//获取版本总数
+function getVersionCount(index) {
+    let pre = db.prepare("SELECT count(`uuid`) FROM `axda-app` WHERE `index` = ? AND `status` = 1 AND `filter` LIKE ?;");
+    pre.set(1, index);
+    pre.set(2, "%" + filter + "%");
+    let r = pre.executeQuery();
+    return r[0]['count(`uuid`)'];
+}

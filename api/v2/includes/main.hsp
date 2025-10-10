@@ -1,0 +1,102 @@
+<?hsp
+try { sessionStart(259200); } catch(e) {}
+var Database = module("Database");
+var db = Database.getConnect("axda");
+var codec = null;
+var data = {};
+data.code = 2000;
+
+var dbx = {
+    insert: function(table, data) {
+        var sql = "INSERT INTO `" + table + "` (";
+        var length = Object.keys(data).length;
+        var f = true;
+        for (var key in data) {
+            if (!f) {
+                sql += ",";
+            } else {
+                f = false;
+            }
+            sql += ("`" + key + "`");
+        }
+        sql += ") VALUES (";
+        for (var i = 0; i < length - 1; i++) {
+            sql += "?,";
+        }
+        sql += "?);";
+        stmt = db.prepare(sql);
+        var i = 1;
+        for (var key in data) {
+            stmt.set(i, data[key]);
+            i++;
+        }
+        stmt.executeUpdate();
+        stmt.close();
+    },
+    update: function(table, data, where_key, where_value, limit = 0, status = -1) {
+        var sql = "UPDATE `" + table + "` SET ";
+        var f = true;
+        for (var key in data) {
+            if (!f) {
+                sql += ",";
+            } else {
+                f = false;
+            }
+            sql += "`" + key + "` = ? ";
+        }
+        sql += "WHERE `";
+        sql += where_key;
+        sql += "` = ?"
+        if (status != -1) {
+            sql += " AND `status` = " + status;
+        }
+        if (limit > 0) {
+            sql += " LIMIT ?";
+        }
+        var pre = db.prepare(sql);
+        var i = 1;
+        for (var key in data) {
+            pre.set(i, data[key]);
+            i++;
+        }
+        if (limit > 0) {
+            pre.set(i + 1, limit);
+        }
+        sql += ";";
+        pre.set(i, where_value);
+        pre.executeUpdate();
+        pre.close();
+    }
+};
+
+function getPost() { try{
+    if (codec == null) codec = module("Codec");
+    if (_POST["data"] != null) {
+        var post = _POST['data']
+            .replaceAll("%3D", "")
+            .replaceAll("%2F", "/")
+            .replaceAll("%2B", "+");
+        return JSON.parse(codec.base64DecodeToString(post));
+    }}catch(e){data.e=e;}
+}
+
+function getUID() {
+    return _SESSION["uid"] == undefined ? 0 : _SESSION["uid"];
+}
+
+function getLatest(index) {
+    var data = {};
+    let preNKX = db.prepare("SELECT `version`, `update` FROM `axda-app` WHERE `index` = ? AND `filter` LIKE '%[nkx]%' AND `status` = 1 ORDER BY `update` DESC LIMIT 1;");
+    preNKX.set(1, index);
+    var rNKX = preNKX.executeQuery();
+    if (rNKX.length == 1) data.nkx = { version: rNKX[0].version, update: rNKX[0].update };
+    let preMOT = db.prepare("SELECT `version`, `update` FROM `axda-app` WHERE `index` = ? AND `filter` LIKE '%[mot]%' AND `status` = 1 ORDER BY `update` DESC LIMIT 1;");
+    preMOT.set(1, index);
+    var rMOT = preMOT.executeQuery();
+    if (rMOT.length == 1) data.mot = { version: rMOT[0].version, update: rMOT[0].update };
+    let prePNX = db.prepare("SELECT `version`, `update` FROM `axda-app` WHERE `index` = ? AND `filter` LIKE '%[pnx]%' AND `status` = 1 ORDER BY `update` DESC LIMIT 1;");
+    prePNX.set(1, index);
+    var rPNX = prePNX.executeQuery();
+    if (rPNX.length == 1) data.pnx = { version: rPNX[0].version, update: rPNX[0].update };
+    return data;
+}

@@ -1,0 +1,49 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+var post = getPost();
+if (getUID() > 0) {
+    data.data = {};
+    db.trans();
+    watch(post.index, post.target);
+    db.commit();
+} else {
+    data.code = 4513;
+}
+echo(data);
+
+function watch(index, status) {
+    if (status) {
+        var date = module("Date");
+        var pre = db.prepare("INSERT INTO `axda-following` (`uid`, `plugin`, `time`, `mail`, `notify`) SELECT ?, ?, ?, ?, u.`notify` FROM `axda-user` u WHERE `uid` = ? AND NOT EXISTS (SELECT 1 FROM `axda-following` WHERE `uid` = ? AND `plugin` = ?);");
+        pre.set(1, getUID());
+        pre.set(2, index);
+        pre.set(3, date.getTime());
+        pre.set(4, _SESSION["mail"])
+        pre.set(5, getUID());
+        pre.set(6, getUID());
+        pre.set(7, index);
+        var r = pre.executeUpdate();
+        data.data.status = true;
+        addFollowing(index);
+    } else {
+        var pre = db.prepare("DELETE FROM `axda-following` WHERE `uid` = ? AND `plugin` = ?;");
+        pre.set(1, getUID());
+        pre.set(2, index);
+        var r = pre.executeUpdate();
+        data.data.status = false;
+        subtractFollowing(index);
+    }
+}
+
+function addFollowing(index) {
+    let pre = db.prepare("UPDATE `axda-plugin` SET `following` = `following` + 1 WHERE `index` = ?;");
+    pre.set(1, index);
+    pre.executeUpdate();
+}
+
+function subtractFollowing(index) {
+    let pre = db.prepare("UPDATE `axda-plugin` SET `following` = `following` - 1 WHERE `index` = ?;");
+    pre.set(1, index);
+    pre.executeUpdate();
+}

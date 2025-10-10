@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <title>AXDA Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script>let theme=localStorage.getItem("theme");if(theme==undefined){theme="auto"}document.querySelector('html').classList.add('mdui-theme-'+theme);</script>
+    <script src="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.2/base64.min.js"></script>
+    <script src="https://cdn.staticfile.net/spark-md5/3.0.2/spark-md5.min.js" type="application/javascript"></script>
+</head>
+<body>
+<div class="appnav"></div>
+<div id="appbar"></div>
+<mdui-layout class="p-0 m-0">
+    <mdui-layout-main class="center">
+        <div id="container" class="big-6 sm-8 pr-1">
+            <div class="ver-center">
+                <div class="l title" lang="71">上传新版本</div>
+                <div class="title mr-2">:</div>
+                <div class="title name"></div>
+                <mdui-button class="l row-right" variant="outlined" onclick="window.history.back()" lang="184">返回</mdui-button>
+            </div>
+            <div class="center">
+                <div class="big-4 sm-8 hide up">
+                    <input class="hide" type="file" id="fileInput" accept=".jar">
+                    <mdui-card variant="outlined" class="center mt-4" id="input" style="height: 200px;" onclick="$$('#fileInput').click()" clickable>
+                        <div class="theme title l" lang="142" id="fileName"></div>
+                    </mdui-card>
+                    <mdui-linear-progress class="hide" id="load" style="margin-top: 100px;" value="0.3"></mdui-linear-progress>
+                </div>
+                <mdui-button class="l mt-4 up big-2 sm-8 hide" lang="146" id="up-btn" icon="upload" onclick="uploadFile()">上传</mdui-button>
+                <mdui-card class="check big-4 sm-8 text-center p-4 mt-4 hide">
+                    <mdui-circular-progress></mdui-circular-progress>
+                    <div class="l mt-2" lang="152">正在检查插件文件</div>
+                </mdui-card>
+                <mdui-card class="big-4 sm-8 text-center p-4 mt-4 hide err">
+                    <mdui-icon name="error" style="font-size:40px;color:rgb(216, 82, 82);"></mdui-icon>
+                    <div class="mt-2 subtitle" id="err-msg">-</div>
+                </mdui-card>
+                <mdui-card class="push big-4 sm-8 mt-4 p-2 hide">
+                    <div class="subtitle ver-center p-2">
+                        <strong class="l" lang="154">插件名称</strong>
+                        <div class="ml-4 mt-1 theme" id="name">-</div>
+                    </div>
+                    <mdui-divider></mdui-divider>
+                    <div class="subtitle ver-center p-2">
+                        <strong class="l" lang="155">插件版本</strong>
+                        <div class="ml-4 mt-1 theme" id="version">-</div>
+                    </div>
+                    <mdui-divider></mdui-divider>
+                    <div class="subtitle ver-center p-2">
+                        <strong class="l" lang="81">文件大小</strong>
+                        <div class="ml-4 mt-1 theme" id="size">-</div>
+                    </div>
+                    <mdui-divider class="card-depend"></mdui-divider>
+                    <div class="subtitle ver-center p-2 card-depend">
+                        <strong class="l" lang="185">前置依赖</strong>
+                        <div class="l ml-4 mt-1 theme" id="depend" lang="186">无</div>
+                    </div>
+                </mdui-card>
+                <mdui-card class="push big-4 sm-8 mt-2 p-2 hide">
+                    <div class="l mb-2" lang="215"></div>
+                    <mdui-checkbox class="filter" id="nkx">Cloudburst Nukkit</mdui-checkbox>
+                    <mdui-checkbox class="filter" id="mot">Nukkit-MOT</mdui-checkbox>
+                    <mdui-checkbox class="filter" id="pnx">PowerNukkitX 1.0</mdui-checkbox>
+                </mdui-card>
+                <mdui-card class="push big-4 sm-8 mt-2 p-2 hide">
+                    <mdui-text-field variant="outlined" class="ll" lang="163" label="更新内容" rows="5" id="description"></mdui-text-field>
+                </mdui-card>
+                <mdui-button class="push l mt-4 big-2 sm-8 hide" lang="82" id="up-btn" icon="arrow_outward" onclick="push()">发布</mdui-button>
+                <mdui-button class="del l mt-2 big-2 sm-8 hide" variant="outlined" lang="139" id="up-btn" icon="delete" onclick="del()">删除</mdui-button>
+            </div>
+            
+            <div style="height: 70px;"></div>
+            <div class="ver-center">
+                <div class="l title row-left" lang="37">自动发布</div>
+                <mdui-button variant="text" class="l" lang="42" onclick="goto('/builds/' + index)">构建历史</mdui-button>
+            </div>
+            <!-- <mdui-card class="mt-2 p-2 full-w" variant="elevated"> -->
+                <div class="center m-4">
+                    <mdui-dropdown placement="bottom" class="hide mk-release">
+                        <mdui-button slot="trigger" class="l" lang="234">新建自动任务</mdui-button>
+                        <mdui-menu>
+                            <!-- <mdui-menu-item>从 Github 拉取项目</mdui-menu-item> -->
+                            <mdui-menu-item onclick="mkReleaseMotci()" class="l" lang="235">从 MOT-CI 拉取项目</mdui-menu-item>
+                        </mdui-menu>
+                    </mdui-dropdown>
+                    <mdui-linear-progress class="hide load-release"></mdui-linear-progress>
+                </div>
+                <div id="releases"></div>
+            <!-- </mdui-card> -->
+        </div>
+        <div id="foot" class="big-8 sm-8"></div>
+    </mdui-layout-main>
+</mdui-layout>
+</body>
+<script src="/js/main.js"></script>
+<script src="/js/upload.js"></script>
+</html>

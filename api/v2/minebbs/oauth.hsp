@@ -1,0 +1,22 @@
+<?hsp
+
+var user_id = "9822632883787571";
+var key = "cE_vT_VFRgF4kZJxoaFgwXQLFqm8jzn7";
+
+var code = _GET['code'];
+var state = _GET['state'];
+var http = module("Http");
+var codec = module("Codec");
+var header = {
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Authorization": "Basic " + codec.base64Encode(user_id + ":" + key)
+};
+var params = {
+    client_id: user_id,
+    grant_type: "authorization_code",
+    redirect_uri: "https://test.axda.net/api/v2/minebbs/callback.hsp",
+    client_secret: key,
+    code: code
+};
+var auth = http.post("https://bbs.mcnav.net/api/oauth2/token", params, header).body();
+echo(auth);

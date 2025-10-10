@@ -1,0 +1,36 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+var post = getPost();
+var index = post.index;
+var http = module("Http");
+
+var pre = db.prepare("SELECT `minebbs`,`author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;")
+pre.set(1, index);
+var r = pre.executeQuery();
+if (r.length > 0 && r[0].author == getUID()) {
+    if (r[0].minebbs != null && r[0].minebbs.startsWith("https://www.minebbs.com/")) {
+        var mb;
+        var minebbs = r[0].minebbs.replace("https://www.minebbs.com/", "");
+        if (minebbs.includes(".")) {
+            mb = minebbs.split(".")[1].replace("/", "")
+        } else {
+            mb = minebbs.split("resources/")[1].replace("/", "");
+        }
+        data.mb = mb;
+        var resp = http.get("https://api.minebbs.com/api/openapi/v1/resources/" + mb).body();
+        var json = JSON.parse(resp);
+        if (json.status == 2000) {
+            data.text = json.data.description_parsed;
+            dbx.update("axda-plugin", {readme: "<!--mb-->" + data.text}, "index", index, 1, 1);
+        } else {
+            data.code = 4078;
+            data.msg = 248;
+        }
+    } else {
+        data.code = 4077;
+        data.msg = 247;
+    }
+} else {
+    data.code = 4003;
+}
+echo(data);

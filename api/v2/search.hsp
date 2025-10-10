@@ -1,0 +1,66 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+var count = 16; //每页显示数量
+data.paging = {};
+var post = getPost();
+var filter = post.filter;
+if (filter == null || filter == undefined) {
+    filter = ['pnx', 'mot', 'nkx'];
+}
+var page = post.page;
+if (post.page != undefined) page = post.page;
+if (page == 0) page = 1;
+search(post.order);
+echo(data);
+
+function search(order = "random") {
+    var sql = "SELECT subquery.*, total_count.total FROM (SELECT `title`,`description`,`latest_nkx`,`latest_pnx`,`latest_mot`,`down_web`,`down_cmd`,`update`,`index`,`following` FROM `axda-plugin` WHERE (";
+    var params = [];
+    var fs = true;
+    sql += " `latest_" + filter + "` IS NOT NULL";
+    fs = true;
+    sql += ")";
+    if (post.word != undefined && post.word != null && post.word != "") {
+        var w = post.word.replace(/\s+/g, ' ').trim().split(" ");
+        w = [...new Set(w)];
+        for (var i in w) {
+            sql += " AND (`title` LIKE ? OR `description` LIKE ? OR `readme` LIKE ? OR `index` LIKE ? OR `name` LIKE ?)";
+            var a = "%" + w[i] + "%";
+            params.push(a, a, a, a, a);
+        }
+    }
+    sql += " AND `status` = 1 AND `index` != 'kernel'";
+
+    if (order == "random") {
+        sql += " ORDER BY RAND(?)";
+        params.push(post.seed + "abc");
+    } else if (order == "latest") {
+        sql += " ORDER BY `update` DESC"
+    } else if (order == "hot") {
+        sql += " ORDER BY (`down_cmd` + `down_web` + `look`) DESC"
+    }
+    sql += " LIMIT ? OFFSET ?) AS subquery CROSS JOIN (SELECT COUNT(`index`) AS total FROM `axda-plugin` WHERE (";
+    params.push(Math.floor(count));
+    params.push(Math.floor(count * page - count));
+    sql += " `latest_" + filter + "` IS NOT NULL";
+    sql += ")";
+    if (post.word != undefined && post.word != null && post.word != "") {
+        var w = post.word.replace(/\s+/g, ' ').trim().split(" ");
+        w = [...new Set(w)];
+        for (var i in w) {
+            sql += " AND (`title` LIKE ? OR `description` LIKE ? OR `readme` LIKE ? OR `index` LIKE ? OR `name` LIKE ?)";
+            var a = "%" + w[i] + "%";
+            params.push(a, a, a, a, a);
+        }
+    }
+    sql += ") AS total_count;";
+    var pre = db.prepare(sql);
+    for (var i = 0; i < params.length; i++) {
+        pre.set(i + 1, params[i]);
+    }
+    var r = pre.executeQuery();
+    data.data = {};
+    data.data.plugins = r;
+    data.paging.page = Number.parseInt(page);
+    data.paging.count = r.length == 0 ? 0 : Math.ceil(r[0].total / count);
+}

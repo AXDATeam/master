@@ -1,0 +1,55 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+
+var post = getPost();
+data.data = {};
+var version = post.version;
+if (post.version == "latest") {
+    version = getLatestVersion();
+}
+if (version == null || version == undefined) {
+    data.code = 5678;
+    data.msg = 180;
+} else {
+    data.data.version = version;
+    data.data.url = getURL(version);
+}
+
+echo(data);
+
+function getURL(version) {
+    var app = module("App");
+    db.trans();
+    var pre = db.prepare("SELECT `uuid`,`size` FROM `axda-app` WHERE `index` = ? AND `version` = ? AND `status` = 1;");
+    pre.set(1, post.index);
+    pre.set(2, version);
+    var r = pre.executeQuery();
+    if (r.length == 1) {
+        let url = app.getURL(r[0].uuid, "ap-shanghai");
+        let pre = db.prepare("UPDATE `axda-plugin` SET `down_web` = `down_web` + 1 WHERE `index` = ?;");
+        pre.set(1, post.index);
+        pre.executeUpdate();
+        pre.close();
+        db.commit();
+        var log = module("Log");
+        app.valvePut(Request.getAddress(), r[0].size);
+        log.info(`下载插件: ${post.index}-v${version} [web][ip:${Request.getAddress()}] size:${r[0].size}/${app.valveGet(Request.getAddress())}`);
+        log.info(`客户端: ${Request.getBrowser()};${Request.getBrowserVersion()};${Request.getOS()};${Request.getEngine()};${Request.getEngineVersion()};`);
+        return url;
+    } else {
+        return null;
+    }
+}
+
+function getLatestVersion() {
+    var pre = db.prepare("SELECT `version` FROM `axda-app` WHERE `index` = ? AND `filter` LIKE ? AND `status` = 1 ORDER BY `update` DESC LIMIT 1;");
+    pre.set(1, post.index);
+    pre.set(2, "%[" + post.filter + "]%");
+    var r = pre.executeQuery();
+        data.r = r;
+    if (r.length == 1) {
+        return r[0]["version"];
+    } else {
+        return null;
+    }
+}
