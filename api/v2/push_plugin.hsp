@@ -9,10 +9,7 @@ if (filter == null) {
 var index = getPost()['index'];
 if (index != null) {
     try {
-        var pre = db.prepare("SELECT `author`, `title` FROM `axda-plugin` WHERE `index`=? LIMIT 1;");
-        pre.set(1, index);
-        var r = pre.executeQuery();
-        if (r.length == 0 || r[0]['author'] != getUID()) {
+        if (isOwner(index)) {
             data.code = 4030;
         } else {
             release(getPost()['description'], "update", getUID(), filter);

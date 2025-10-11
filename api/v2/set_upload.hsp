@@ -3,10 +3,10 @@ include("/api/v2/includes/main.hsp");
 
 var index = getPost()['index'];
 if (index != null) {
-    var pre = db.prepare("SELECT `author`,`name` FROM `axda-plugin` WHERE `index`=? AND `status` = 1 LIMIT 1;");
-    pre.set(1, index);
-    var r = pre.executeQuery();
-    if (r.length == 0 || r[0]['author'] != getUID()) {
+//    var pre = db.prepare("SELECT `author`,`name` FROM `axda-plugin` WHERE `index`=? AND `status` = 1 LIMIT 1;");
+//    pre.set(1, index);
+//    var r = pre.executeQuery();
+    if (!isOwner(index)) {
         data.code = 4030;
     } else {
         data.code = 2000;

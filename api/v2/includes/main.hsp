@@ -103,9 +103,9 @@ function getLatest(index) {
 
 function isOwner(index) {
     if (getUID() <= 0) return false;
-    var pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
-    var pre.set(1, index);
+    var pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1 LIMIT 1;");
+    pre.set(1, index);
     var r = pre.executeQuery();
-    if (r.length != 1) return false;
+//    if (r.length != 1) return false;
     if (r[0].author == getUID()) return true;
 }

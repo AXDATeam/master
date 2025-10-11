@@ -32,7 +32,7 @@ function save(post) {
     pre.set(1, post.index);
     var r = pre.executeQuery();
 
-    if (r[0]['author'] == getUID()) {
+    if (isOwner(post.index)) {
         r = {
             title: post.title,
             description: post.description,

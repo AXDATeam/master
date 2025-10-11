@@ -8,10 +8,10 @@ try {
         data.code = 4003;
         exit();
     }
-    var pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
-    pre.set(1, post.index);
-    var r = pre.executeQuery();
-    if (r[0]['author'] == getUID()) {
+//    var pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+//    pre.set(1, post.index);
+//    var r = pre.executeQuery();
+    if (isOwner(post.index)) {
         var pre = db.prepare("UPDATE `axda-plugin` SET `status` = 2 WHERE `index` = ?;");
         pre.set(1, post.index);
         pre.executeUpdate();
