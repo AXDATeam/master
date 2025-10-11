@@ -1,6 +1,8 @@
 <?hsp
 //  201610501
-var group_id = 201610501;
+var values = module("Values");
+
+var group_id = values.getString("onebot_group");
 setConsoleException();
 
 var http = module("Http");
@@ -20,9 +22,9 @@ var data = {
     message: text,
 };
 var header = {
-    Authorization: "Bearer StarElement",
+    Authorization: "Bearer " + values.getString("onebot_token"),
 };
-var resp = http.post("http://s3.starelement.net:2234/send_group_msg", JSON.stringify(data), null, header, null, 3000);
+var resp = http.post(values.getString("onebot_server") + "/send_group_msg", JSON.stringify(data), null, header, null, 3000);
 module("Log").debug(resp.body().trim());
 
 function getFilter() {
