@@ -229,6 +229,9 @@ function updateUser(resp) {
     for (var i in loadList) {
         loadList[i]();
     }
+    if (window.location.hash == "#verify") {
+        mdui.alert({headline: lang[141]});
+    }
 }
 $.ajax({
     url: axda + "api/v2/account.hsp",

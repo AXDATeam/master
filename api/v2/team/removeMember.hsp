@@ -1,0 +1,22 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+var post = getPost();
+
+if (isAuthor(post.index)) {
+//    try {
+        var pre = db.prepare("SELECT `team` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1 LIMIT 1;");
+        pre.set(1, post.index);
+        var r = pre.executeQuery();
+        var team = JSON.parse(r[0].team);
+        var index = team.indexOf(post.uid + "");
+        if (index > -1) {
+            team.splice(index, 1);
+        }
+        dbx.update("axda-plugin", {"team": JSON.stringify(team)}, "index", post.index, 1, 1);
+//    } catch (e) {
+//        data.code = 4001;
+//    }
+} else {
+    data.code = 4003;
+}
+echo(data);

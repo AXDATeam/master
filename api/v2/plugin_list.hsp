@@ -6,10 +6,16 @@ if (getUID() > 0) {
     pre.set(1, getUID());
     var r = pre.executeQuery();
     data.data = r;
-    if (data.data.update != undefined) {
-        var date = module("Date");
-        data.data.update = date.getNow() - data.data.update;
+    var preT = db.prepare("SELECT `title`,`index`,`update`,`down_cmd`,`down_web`,`look`,`following` FROM `axda-plugin` WHERE `team` LIKE ? AND `status` = 1 ORDER BY `update` DESC;")
+    preT.set(1, "%\"" + getUID() + "\"%");
+    var rT = preT.executeQuery();
+    for (var i in rT) {
+        data.data.push(rT[i]);
     }
+//    if (data.data.update != undefined) {
+//        var date = module("Date");
+//        data.data.update = date.getNow() - data.data.update;
+//    }
 } else {
     data.code = 4003;
 }

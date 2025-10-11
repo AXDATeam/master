@@ -31,6 +31,7 @@
             <mdui-tabs value="info" class="mt-4 sm-full tab hide">
                 <mdui-tab value="info" class="l" lang="38" onclick="$('#foot-offset').height(30);">插件信息</mdui-tab>
                 <mdui-tab value="readme" class="l" lang="177">自述文件</mdui-tab>
+                <mdui-tab value="team" class="l team-tab hide" lang="250">资源团队</mdui-tab>
                 <mdui-tab-panel slot="panel" id="base" value="info">
                     <div class="ml-4 mt-1" id="tips"></div>
                     <div class="l ml-4 mt-1 hide" id="create-tips" lang="126"></div>
@@ -95,6 +96,24 @@
                     <mdui-card style="height:300px;width:100%;" id="readme" class="p-4 mt-3">
                     </mdui-card>
                 </mdui-tab-panel>
+                <mdui-tab-panel slot="panel" value="team" class="p-2 team-tab hide">
+                    <div class="ver-center">
+                        <div class="title">添加团队成员</div>
+                        <mdui-button class="row-right" onclick="$$('#team-dialog').open = true;$('.user-search').hide()">添加</mdui-button>
+                    </div>
+                    <div class="p-3">
+                        <div class="pb-2">团队成员具有以下权限:</div>
+                        <div class="pl-2">· 修改项目信息</div>
+                        <div class="pl-2">· 导入自述文件</div>
+                        <div class="pl-2">· 发布新版本</div>
+                        <div class="pl-2">· 修改版本更新信息</div>
+                        <div class="pl-2">· 删除临时版本文件</div>
+                        <div class="pl-2">· 创建自动发布任务</div>
+                        <div class="pl-2">· 修改自动发布任务</div>
+                        <div class="pl-2">· 触发自动发布任务</div>
+                    </div>
+                    <div class="team-list"></div>
+                </mdui-tab-panel>
             </mdui-tabs>
             
 
@@ -111,6 +130,21 @@
         </div>
     </mdui-dialog>
 </mdui-layout>
+
+<mdui-dialog class="m-0 p-0 lt" lt="" close-on-esc close-on-overlay-click headline="添加成员" id="team-dialog">
+    <mdui-text-field class="ll lh mt-3 input" ll="" variant="outlined" label="请输入uid" id="team-uid" icon="person" type="number"></mdui-text-field>
+    <mdui-button class="mt-2 full-w" onclick="searchUser();">查找</mdui-button>
+    <div class="text-center ml-2 hide user-search">
+        <mdui-avatar class="mt-4" id="user-icon-m" fit="contain" style="height:80px;width:80px;" src="/images/default_icon.png"></mdui-avatar>
+        <div>
+            <div class="mt-2">UID: <text id="user-uid-m">-</text></div>
+            <div class="title" id="user-name-m">-</div>
+            <div id="user-sign-m">-</div>
+        </div>
+        <mdui-button class="mt-2" onclick="addTeam()">添加到团队</mdui-button>
+    </div>
+</mdui-dialog>
+
 </body>
 <script src="/js/main.js"></script>
 <script src="/js/edit_plugin.js"></script>

@@ -101,11 +101,26 @@ function getLatest(index) {
     return data;
 }
 
-function isOwner(index) {
-    if (getUID() <= 0) return false;
+function isOwner(index, uid = getUID()) {
+    try {
+        if (uid <= 0) return false;
+        var pre = db.prepare("SELECT `author`, `team` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1 LIMIT 1;");
+        pre.set(1, index);
+        var r = pre.executeQuery();
+        if (r[0].author == uid) return true;
+        var team = JSON.parse(r[0].team);
+        if (team.includes(uid + "")) return true;
+        return false;
+    } catch (e) {
+        return false;
+    }
+}
+
+function isAuthor(index, uid = getUID()) {
+    if (uid <= 0) return false;
     var pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1 LIMIT 1;");
     pre.set(1, index);
     var r = pre.executeQuery();
-//    if (r.length != 1) return false;
-    if (r[0].author == getUID()) return true;
+    if (r[0].author == uid) return true;
+    return false;
 }

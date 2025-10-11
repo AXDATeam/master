@@ -26,7 +26,7 @@ var getTarget = function() {
         goto("/#login");
         return;
     } else if (getUser().verified == 0) {
-        goto("/manage");
+        goto("/manage/#verify");
         return;
     }
     var array = window.location.pathname.split("/");
@@ -78,6 +78,19 @@ var getTarget = function() {
                         addLink(i, resp.data.link[i]);
                     }
                     $("#btn-remove").show();
+
+                    //添加资源团队UI
+                    if (getUser().uid == resp.data.author) {
+                        $(".team-tab").show();
+                        try {
+                            var team = JSON.parse(resp.data.team);
+                            for (var i in team) {
+                                addMemberCard(team[i]);
+                            }
+                        } catch (e) {}
+                    }
+
+
                     updateView();
                 } else {
                     goto("/manage");
@@ -238,5 +251,88 @@ function saveReadmeG(path) {
                 mdui.alert({headline: lang[resp.msg]});
             }
         }),
+    });
+}
+
+function searchUser() {
+    var uid = $("#team-uid").val();
+    $$("#team-uid").setCustomValidity('');
+    $(".user-search").hide();
+    $("#user-icon-m").attr("src", "/images/default_icon.png");
+    if (uid == "" || uid == undefined) {
+        $$("#team-uid").setCustomValidity(" ");
+        return;
+    }
+    $.ajax({
+        url: axda + "api/v2/user.hsp",
+        data: {data:encode({uid:uid})},
+        dataType: "json",
+        success: (resp) => {
+            if (resp.code == 2000 || resp.code == 2001) {
+                $(".user-search").show();
+                $("#user-uid-m").text(resp.data.uid);
+                $("#user-name-m").text(resp.data.name);
+                $("#user-sign-m").text(resp.data.sign);
+                $("#user-icon-m").attr("src", resp.data.icon);
+            } else {
+                $$("#team-uid").setCustomValidity(lang[117]);
+            }
+        }
+    });
+}
+
+function addTeam() {
+    var uid = $("#user-uid-m").text();
+    $.ajax({
+        url: axda + "api/v2/team/addMember.hsp",
+        data: {data:encode({index:index, uid:uid})},
+        dataType: "json",
+        success: (resp) => {
+            if (checkCode(resp)) {
+                if (resp.code == 2000) {
+                    $$("#team-dialog").open = false;
+                    mdui.alert({headline: lang[252]});
+                    addMemberCard(uid);
+                }
+            } else {
+                mdui.alert({headline: lang[resp.msg]});
+            }
+        }
+    });
+}
+
+function addMemberCard(uid) {
+    $.ajax({
+        url: axda + "api/v2/user.hsp",
+        data: {data:encode({uid:uid})},
+        dataType: "json",
+        success: (resp) => {
+            if (resp.code != 2001) return;
+            var card = `<mdui-card class="mt-2 p-2 ver-center full-w member-id-${resp.data.uid}">
+                            <mdui-avatar class="ml-4" fit="contain" style="height:40px;width:40px;" src="${resp.data.icon ? resp.data.icon : '/images/default_icon.png'}"></mdui-avatar>
+                            <div class="title ml-4">${resp.data.name}</div>
+                            <mdui-button-icon class="mr-4 row-right" variant="tonal" icon="delete" onclick="removeMember(${resp.data.uid})"></mdui-button-icon>
+                        </mdui-card>`;
+            $(".team-list").append(card);
+        }
+    });
+}
+
+
+function removeMember(uid) {
+    $.ajax({
+        url: axda + "api/v2/team/removeMember.hsp",
+        data: {data:encode({index:index, uid:uid})},
+        dataType: "json",
+        success: (resp) => {
+            if (checkCode(resp)) {
+                if (resp.code == 2000) {
+                    mdui.alert({headline: lang[253]});
+                    $(".member-id-" + uid).remove();
+                }
+            } else {
+                mdui.alert({headline: lang[105]});
+            }
+        }
     });
 }

@@ -1,0 +1,28 @@
+<?hsp
+include("/api/v2/includes/main.hsp");
+var post = getPost();
+
+//判断是否已经为团队成员
+if (isOwner(post.index, post.uid)) {
+    data.code = 4701;
+    data.msg = 251;
+    echo(data);
+    exit();
+}
+
+if (isAuthor(post.index)) {
+    var pre = db.prepare("SELECT `team` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1 LIMIT 1;");
+    pre.set(1, post.index);
+    var r = pre.executeQuery();
+    var json = [];
+    if (r[0].team) {
+        json = JSON.parse(r[0].team);
+    }
+    json.push(post.uid);
+    dbx.update("axda-plugin", {team: JSON.stringify(json)}, "index", post.index, 1, 1);
+} else {
+    data.code = 4703;
+    data.msg = 105;
+}
+
+echo(data);
