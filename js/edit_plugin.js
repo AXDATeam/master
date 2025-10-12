@@ -81,13 +81,14 @@ var getTarget = function() {
 
                     //添加资源团队UI
                     if (getUser().uid == resp.data.author) {
-                        $(".team-tab").show();
                         try {
                             var team = JSON.parse(resp.data.team);
                             for (var i in team) {
                                 addMemberCard(team[i]);
                             }
                         } catch (e) {}
+                    } else {
+                        $(".team-tab").remove();
                     }
 
 
