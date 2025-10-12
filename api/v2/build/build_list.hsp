@@ -2,7 +2,7 @@
 include("api/v2/includes/main.hsp");
 var post = getPost();
 
-if (isAuthor()) {
+if (isOwner()) {
     let pre = db.prepare(getSql(post.display));
     pre.set(1, post.index);
     if (post.display != "all") {}
@@ -10,18 +10,6 @@ if (isAuthor()) {
     data.data = r;
 }
 echo(data);
-
-function isAuthor() {
-    if (getUID() == 0) return false;
-    let pre = db.prepare("SELECT `author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
-    pre.set(1, post.index);
-    let r = pre.executeQuery();
-    if (r.length >= 1 || r[0].author == getUID()) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
 function getSql(dp) {
     if (dp == "all") return "SELECT `bid`, `rid`, `status`, `time` FROM `axda-build` WHERE `index` = ? ORDER BY `time` DESC LIMIT 50;";
