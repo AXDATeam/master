@@ -1,0 +1,36 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+var post = getPost();
+
+var pre = db.prepare("SELECT * FROM `axda-build` WHERE `bid` = ? LIMIT 1;");
+pre.set(1, post.bid);
+var r = pre.executeQuery();
+if (r.length != 1 || r[0].index != post.index) {
+    data.code = 6400;
+} else {
+    data.data = {};
+    data.data.bid = post.bid;
+    data.data.status = r[0].status;
+    data.data.time = r[0].time;
+    data.data.rid = r[0].rid;
+    data.data.trigger = r[0].trigger;
+    data.data.index = r[0].index;
+    let pre2 = db.prepare("SELECT `name` FROM `axda-plugin` WHERE `index` = ? LIMIT 1");
+    pre2.set(1, r[0].index);
+    var r2 = pre2.executeQuery();
+    if (r2.length >= 1) {
+        data.data.name = r2[0].name;
+    }
+    let pre3 = db.prepare("SELECT `type` FROM `axda-release` WHERE `rid` = ? LIMIT 1");
+    pre3.set(1, r[0].rid);
+    var r3 = pre3.executeQuery();
+    if (r3.length >= 1) {
+        data.data.type = r3[0].type;
+    }
+    data.data.print = r[0].print;
+    if (r[0].status == 200) {
+        data.data.print = "发布成功"
+    }
+}
+
+echo(data);

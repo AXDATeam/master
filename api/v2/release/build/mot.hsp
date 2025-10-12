@@ -1,0 +1,129 @@
+<?hsp
+include("api/v2/includes/main.hsp");
+include("api/v2/includes/push.hsp");
+setConsoleException();
+var log = module("Log");
+var app = module("App");
+try {
+    var rid;
+    var url;
+    var latest;
+    var index;
+    var trigger;
+    var info_row;
+
+    if (_ENTRY != null) {
+        rid = _ENTRY;
+        trigger = "manual";
+        let pre = db.prepare("SELECT * FROM `axda-release` WHERE `rid` = ? AND `status` = 1;");
+        pre.set(1, rid);
+        let r = pre.executeQuery();
+        if (r.length == 1) {
+            url = r[0].url;
+            latest = r[0].branche;
+            index = r[0].index;
+            info_row = r[0];
+        } else {
+            throw "the rid is not found.";
+        }
+    }
+    if (!url.endsWith("/")) {
+        url += url + "/";
+    }
+
+    //从构建站下载插件文件
+    var http = module("Http");
+    var resp = http.get(url + "api/json");
+    var json = JSON.parse(resp.body());
+    if (latest == json.lastBuild.number) {
+        throw "the last build number is not update."
+    }
+    var resp2 = http.get(url + "/" + json.lastBuild.number + "/api/json");
+    var json2 = JSON.parse(resp2.body());
+    if (json2.artifacts.length != 1) {
+        throw "more than one artifact file.";
+    }
+    var down_url = url + "/" + json.lastBuild.number + "/artifact/" + json2.artifacts[0].relativePath;
+    var down = http.get(down_url);
+    var file = getFile("temp/" + random(8));
+    down.data().write(file);
+
+    //提交发布前检查
+    var pre = db.prepare("SELECT `index`,`name`,`author` FROM `axda-plugin` WHERE `index`=? AND `status` = 1 LIMIT 1;");
+    pre.set(1, index);
+    var r = pre.executeQuery();
+    var preApp = db.prepare("SELECT `version` FROM `axda-app` WHERE `index` = ? AND `status` = 1;");
+    preApp.set(1, index);
+    var ra = preApp.executeQuery();
+    var ArrayList = Java.type('java.util.ArrayList');
+    var list = new ArrayList();
+    // var list = [];
+    for (var i in ra) {
+        list.add(ra[i]['version']);
+    }
+    app.upload(file, index, r[0], list);
+
+    //轮询检查状态
+    while (true) {
+        sleep(2000);
+        if (app.getStatus(index) != -1) {
+            break;
+        }
+    }
+
+    //写入build数据
+    db.trans();
+    var status = app.getStatus(index);
+    var build = {
+        index: index,
+        rid: rid,
+        status: (status == -2)? 200: status,
+        print: (status == -2)? -2: -3,
+        trigger: trigger,
+        time: module("Date").getTime(),
+    };
+    dbx.insert("axda-build", build);
+    dbx.update("axda-release", {branche: json.lastBuild.number}, "rid", rid);
+    db.commit();
+
+    //上传新版本
+    release(getDesc(json2), trigger + "_mot", -3, JSON.parse(info_row.kernel));
+    //app.delete(index);
+    log.debug("MOT自动任务成功: rid:" + rid);
+
+} catch(e) {
+    log.error("MOT-Build任务异常:(rid:" + rid + ") " + e);
+    var build = {
+        index: index,
+        rid: rid,
+        status: 400,
+        print: e.getMessage == undefined? e: e.getMessage(),
+        trigger: trigger,
+        time: module("Date").getTime(),
+    };
+    dbx.insert("axda-build", build);
+    app.delete(index);
+    log.error("构建失败")
+}
+
+function random(length) {
+  let result = '';
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+function getDesc() {
+    try {
+        let desc = "";
+        let items = json2.changeSet.items;
+        for (var i in items) {
+            desc += items[i].commitId.substring(0, 7) + ": " + items[i].msg + "\n";
+        }
+        return desc.trim();
+    } catch (e) {
+        return e.toString();
+    }
+}
