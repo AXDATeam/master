@@ -87,6 +87,7 @@ $(".appnav").html(`
                     <mdui-list-item icon="account_tree" class="l" lang="5" href="javascript:goto('/manage')" rounded>插件管理</mdui-list-item>
                     <mdui-list-item icon="person" class="l" lang="6" href="javascript:toUser();" rounded>个人中心</mdui-list-item>
                 </mdui-list>
+                <mdui-divider class="mt-4"></mdui-divider>
             </div>
                 <mdui-list>
                     <mdui-list-subheader class="l ver-center" lang="254" style="font-size:14px;height:38px;">开发</mdui-list-subheader>
