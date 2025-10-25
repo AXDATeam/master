@@ -87,8 +87,12 @@ $(".appnav").html(`
                     <mdui-list-item icon="account_tree" class="l" lang="5" href="javascript:goto('/manage')" rounded>插件管理</mdui-list-item>
                     <mdui-list-item icon="person" class="l" lang="6" href="javascript:toUser();" rounded>个人中心</mdui-list-item>
                 </mdui-list>
-            <mdui-divider class="mt-4"></mdui-divider>
             </div>
+                <mdui-list>
+                    <mdui-list-subheader class="l ver-center" lang="254" style="font-size:14px;height:38px;">开发</mdui-list-subheader>
+                    <mdui-list-item icon="code" class="l" lang="255" href="/dev/" rounded>Nukkit速查手册</mdui-list-item>
+                </mdui-list>
+                <mdui-divider class="mt-4"></mdui-divider>
             <mdui-list>
                 <mdui-list-subheader class="l ver-center" lang="7" style="font-size:14px;height:38px;">下载</mdui-list-subheader>
                 <mdui-list-item onclick="mdui.confirm({description:'此网页内容由第三方提供,是否跳转?',confirmText:'确认',cancelText:'取消',onConfirm:()=>{window.location.href='https://mc.minebbs.com/'}})" target="_blank" rounded>

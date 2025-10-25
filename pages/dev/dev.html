@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <title>AXDA Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script>let theme=localStorage.getItem("theme");if(theme==undefined){theme="auto"}document.querySelector('html').classList.add('mdui-theme-'+theme);</script>
+    <script src="https://cdn.jsdelivr.net/npm/mdui@2.1.3/mdui.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.2/base64.min.js"></script>
+    <script src="https://cdn.staticfile.net/spark-md5/3.0.2/spark-md5.min.js" type="application/javascript"></script>
+</head>
+<body>
+<div class="appnav"></div>
+<div id="appbar"></div>
+<mdui-layout class="p-0 m-0">
+    <mdui-layout-main class="center">
+        <div id="container" class="big-6 sm-8 pr-1 main">
+            <h1 class="theme l" lang="255">Nukkit 速查手册</h1>
+            <div>此页面内容基于Nukkit-MOT项目API，其他Nukkit分支可能有所不同。</div>
+            <div class="mt-4">
+                <mdui-card class="card mdui-parse p-2 sm-8 big-4" clickable variant="filled" onclick="goto('/dev/events/')">
+                    <div class="ver-center pl-4">
+                        <mdui-icon name="event" style="font-size: 48px" class="theme"></mdui-icon>
+                        <div class="ml-4">
+                            <h2>事件 / Event</h2>
+                        </div>
+                    </div>
+                </mdui-card>
+            </div>
+        </div>
+        <div id="foot" class="big-8 sm-8 main"></div>
+    </mdui-layout-main>
+</mdui-layout>
+</body>
+<script src="/js/main.js"></script>
+</html>
