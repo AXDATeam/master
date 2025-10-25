@@ -1,7 +1,9 @@
 <?hsp
 
-var user_id = "9822632883787571";
-var key = "cE_vT_VFRgF4kZJxoaFgwXQLFqm8jzn7";
+var values = module("Values");
+
+var user_id = values.minebbs_id;
+var key = values.minebbs_key;
 
 var code = _GET['code'];
 var state = _GET['state'];
