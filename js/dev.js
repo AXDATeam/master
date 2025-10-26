@@ -11,13 +11,31 @@ function load() {
         success: function(resp) {
             data = csv2json(resp);
             show(data);
+        },
+        error: function(resp) {
+            $("#container").text('');
         }
     });
 }
 
 function show(data) {
     if (type === "events") {
+        $(".dev-title").text(lang[258]);
         showEvent(data);
+    } else if (type === "versions") {
+        $(".dev-title").text(lang[259]);
+        showVersion(data);
+    } else if (type === "effects") {
+        $(".dev-title").text(lang[260]);
+        $(".dev-tips").html(lang[261]);
+        showEffect(data);
+    } else if (type === "sounds") {
+        $(".dev-title").text(lang[262]);
+        $(".dev-tips").html(lang[263]);
+        showSound(data);
+    } else if (type === "enchantments") {
+        $(".dev-title").text(lang[264]);
+        showEnchantment(data);
     }
 }
 
@@ -27,7 +45,52 @@ function showEvent(data) {
         var card = `<mdui-card class="p-1 full-w ver-center mb-2 row" clickable>
             <div class="title ml-2">${data[i][0]}</div>
             <div class="subtitle theme ml-4">${data[i][1]}</div>
-            <div class="ml-4 ${data[i][2] ? 'green' : 'red'}">${data[i][2] ? lang[256] : lang[257]}</div>
+            <div class="ml-4 ${data[i][2] ? 'green' : 'red'} row-right pr-4">${data[i][2] ? lang[256] : lang[257]}</div>
+        </mdui-card>`;
+        $("#list-data").append(card);
+    }
+}
+
+function showVersion(data) {
+    $("#list-data").empty();
+    for (var i in data) {
+        var card = `<mdui-card class="p-1 full-w ver-center mb-2 row" clickable>
+            <div class="ml-2">${data[i][0]}</div>
+            <div class="subtitle theme ml-4 row-right pr-4">${data[i][1]}</div>
+        </mdui-card>`;
+        $("#list-data").append(card);
+    }
+}
+
+function showEffect(data) {
+    $("#list-data").empty();
+    for (var i in data) {
+        var card = `<mdui-card class="p-1 full-w ver-center mb-2 row" clickable>
+            <div class="ml-2">${data[i][0]}</div>
+            <div class="subtitle theme ml-4">${data[i][1]}</div>
+            <div class="subtitle row-right pr-4">${data[i][2]}</div>
+        </mdui-card>`;
+        $("#list-data").append(card);
+    }
+}
+
+function showSound(data) {
+    $("#list-data").empty();
+    for (var i in data) {
+        var card = `<mdui-card class="p-1 full-w ver-center mb-2 row" clickable>
+            <div class="ml-2 theme">${data[i][0]}</div>
+            <div class="subtitle ml-4 row-right pr-4">${data[i][1]}</div>
+        </mdui-card>`;
+        $("#list-data").append(card);
+    }
+}
+
+function showEnchantment(data) {
+    $("#list-data").empty();
+    for (var i in data) {
+        var card = `<mdui-card class="p-1 full-w ver-center mb-2 row" clickable>
+            <div class="ml-2">${data[i][0]}</div>
+            <div class="subtitle theme ml-4">${data[i][1]}</div>
         </mdui-card>`;
         $("#list-data").append(card);
     }

@@ -19,9 +19,10 @@
     <mdui-layout-main class="center">
         <div id="container" class="big-6 sm-8 pr-1 main">
             <div class="ver-center">
-                <h1 class="theme l" lang="">Nukkit 事件</h1>
+                <h1 class="theme dev-title"></h1>
                 <mdui-button class="row-right" onclick="goto('/dev/')">返回</mdui-button>
             </div>
+            <p class="mdui-prose dev-tips"></p>
             <mdui-text-field onkeydown="if (event.key == 'Enter') search($('#search').val());" type="text" autocomplete="off" class="ll full pt-3" ll="0" variant="outlined" label="搜索" id="search" onclick='$("#search").attr("readonly", false)' readonly>
                 <mdui-button-icon class="mr-1" slot="end-icon" variant="filled" icon="search" onclick="search($('#search').val());"></mdui-button-icon>
             </mdui-text-field>
