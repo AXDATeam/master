@@ -24,7 +24,7 @@ function show(data) {
 function showEvent(data) {
     $("#list-data").empty();
     for (var i in data) {
-        var card = `<mdui-card class="p-1 full-w ver-center mb-2" clickable>
+        var card = `<mdui-card class="p-1 full-w ver-center mb-2 row" clickable>
             <div class="title ml-2">${data[i][0]}</div>
             <div class="subtitle theme ml-4">${data[i][1]}</div>
             <div class="ml-4 ${data[i][2] ? 'green' : 'red'}">${data[i][2] ? lang[256] : lang[257]}</div>
