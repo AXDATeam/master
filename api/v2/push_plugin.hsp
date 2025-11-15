@@ -9,7 +9,7 @@ if (filter == null) {
 var index = getPost()['index'];
 if (index != null) {
     try {
-        if (isOwner(index)) {
+        if (!isOwner(index)) {
             data.code = 4030;
         } else {
             release(getPost()['description'], "update", getUID(), filter);
