@@ -16,8 +16,8 @@ function sendUpdate(title, index, version, description) {
 
 
 //发布新版本
-function release(description, origin, author, filter) {
-            var title = r[0].title;
+function release(title, description, origin, author, filter) {
+//            var title = r[0].title;
             var now = module("Date").getTime();
             var app = module("App");
             var info = app.getInfo(index);

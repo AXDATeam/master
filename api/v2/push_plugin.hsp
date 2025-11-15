@@ -12,7 +12,10 @@ if (index != null) {
         if (!isOwner(index)) {
             data.code = 4030;
         } else {
-            release(getPost()['description'], "update", getUID(), filter);
+            var pre = db.prepare("SELECT `title` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;");
+            pre.set(1, index);
+            var r = pre.executeQuery();
+            release(r[0].title, getPost()['description'], "update", getUID(), filter);
         }
     } catch (e) {
         data.code = 4035;
