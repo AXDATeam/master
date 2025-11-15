@@ -247,7 +247,7 @@ function downloadFile(version) {
             loading.close();
             if (checkCode(resp)) {
                 if (resp.data.url != undefined) {
-                    window.location.href = resp.data.url;
+                    goto(resp.data.url);
                 } else {
                     mdui.alert({headline: lang[180]});
                 } 
