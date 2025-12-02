@@ -2,7 +2,7 @@
 include("api/v2/includes/main.hsp");
 var post = getPost();
 
-var pre = db.prepare("SELECT `name`,`description`,`down_web`,`title`,`latest_nkx`,`latest_pnx`,`latest_mot`,`look`,`update`,`readme` FROM `axda-plugin` WHERE `index` = 'kernel';");
+var pre = db.prepare("SELECT `name`,`description`,`down_web`,`title`,`latest_nkx`,`latest_pnx`,`latest_mot`,`look`,`update`,`readme` FROM `axda-plugin` WHERE `index` = 'kernel' LIMIT 1;");
 var r = pre.executeQuery();
 data.data = r[0];
 data.data.watch = watch();
