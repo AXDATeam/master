@@ -264,5 +264,6 @@
     "262": "Nukkit 音效枚举",
     "263": "Nukkit-MOT中于<a href='https://github.com/MemoriesOfTime/Nukkit-MOT/blob/master/src/main/java/cn/nukkit/level/Sound.java'>cn.nukkit.level.Sound</a>定义的音效枚举值",
     "264": "基岩版附魔",
-    "265": "此页面提供Nukkit部分枚举常量等内容查询，基于Nukkit-MOT项目API，其他Nukkit分支内容可能有所不同。"
+    "265": "此页面提供Nukkit部分枚举常量等内容查询，基于Nukkit-MOT项目API，其他Nukkit分支内容可能有所不同。",
+    "266": "无操作权限"
 }

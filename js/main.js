@@ -529,6 +529,7 @@ function checkCode(data) {console.log(data);
     if (data.code == 3001) { window.location = data.data.url; return false; }
     if (data.code == 3002) { location.reload(); }
     if (data.code == 4003) { window.location = "/#login"; return false; }
+    if (data.code == 4013) { mdui.alert({headline: lang[266]}); }
     return false;
 }
 function quit() {

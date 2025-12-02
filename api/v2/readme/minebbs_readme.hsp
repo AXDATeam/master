@@ -7,7 +7,7 @@ var http = module("Http");
 var pre = db.prepare("SELECT `minebbs`,`author` FROM `axda-plugin` WHERE `index` = ? AND `status` = 1;")
 pre.set(1, index);
 var r = pre.executeQuery();
-if (r.length > 0 && isOwner(getUID())) {
+if (r.length > 0 && isOwner(index)) {
     if (r[0].minebbs != null && r[0].minebbs.startsWith("https://www.minebbs.com/")) {
         var mb;
         var minebbs = r[0].minebbs.replace("https://www.minebbs.com/", "");
@@ -31,6 +31,6 @@ if (r.length > 0 && isOwner(getUID())) {
         data.msg = 247;
     }
 } else {
-    data.code = 4003;
+    data.code = 4013;
 }
 echo(data);

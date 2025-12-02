@@ -230,8 +230,6 @@ function getReadme(site) {
             success: (resp => {
                 if (checkCode(resp)) {
                     $("#readme").html(resp.text);
-                } else {
-                    mdui.alert({headline: lang[resp.msg]});
                 }
             }),
         });
