@@ -96,11 +96,12 @@ $(".appnav").html(`
                 <mdui-divider class="mt-4"></mdui-divider>
             <mdui-list>
                 <mdui-list-subheader class="l ver-center" lang="7" style="font-size:14px;height:38px;">下载</mdui-list-subheader>
+                <mdui-list-item href="/nukkit-mot/" icon="noise_aware" rounded>Nukkit-MOT</mdui-list-item>
+                <mdui-list-item href="/app/kernel/" icon="api" rounded>AXDA Kernel</mdui-list-item>
                 <mdui-list-item onclick="mdui.confirm({description:'此网页内容由第三方提供,是否跳转?',confirmText:'确认',cancelText:'取消',onConfirm:()=>{window.location.href='https://mc.minebbs.com/'}})" target="_blank" rounded>
                     <div class="ver-center"><text class="l mr-2" lang="8">基岩版客户端</text><mdui-icon name="link"></mdui-icon></div>
                     <mdui-icon slot="icon" src="/images/minecraft.svg">
                 </mdui-avatar></mdui-list-item>
-                <mdui-list-item href="/app/kernel/" icon="api" rounded>AXDA Kernel</mdui-list-item>
             </mdui-list>
         </div>
         </mdui-navigation-drawer>
