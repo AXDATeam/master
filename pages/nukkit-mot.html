@@ -18,12 +18,22 @@
 <mdui-layout class="p-0 m-0">
     <mdui-layout-main class="center mdui-parse">
         <div id="container" class="big-6 sm-8 pr-1 main">
-            <h1 class="theme">Nukkit-MOT <text>内核下载</text></h1>
+            <h1 class="theme">Nukkit-MOT <text class="l" lang="276">内核下载</text></h1>
+            <p class="l" lang="277">此页面定期从MOT官方Jenkins同步最新构建的Nukkit-MOT内核，可能会删除较为久远的构建版本。</p>
+            <p>
+                <text class="l" lang="278">如果您想从官方Jenkins下载内核，请访问</text>
+                <a href="https://motci.cn/job/Nukkit-MOT/job/master/">https://motci.cn/job/Nukkit-MOT/job/master/</a>
+            </p>
         </div>
         <mdui-card variant="filled" onclick="goto('https://down.axda.net/Nukkit-MOT.jar')" class="full-w p-4 center big-6 sm-8" clickable>
+            <mdui-icon class="mdui-icon material-icons" style="font-size: 3rem;">cloud_download</mdui-icon>
             <div class="title m-4">Nukkit-MOT.jar</div>
             <a href="https://down.axda.net/Nukkit-MOT.jar">Build #<text id="latest"></text></a>
         </mdui-card>
+        </div>
+        <div class="full-w big-6 sm-8">
+            <h2 class="l" lang="17">历史版本</h2>
+            <div id="history"></div>
         </div>
         <div id="foot" class="big-8 sm-8 main"></div>
     </mdui-layout-main>

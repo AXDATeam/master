@@ -274,5 +274,8 @@
   "272": "Add Member",
   "273": "Please enter UID",
   "274": "Search",
-  "275": "Add to team"
+  "275": "Add to team",
+  "276": "Kernel Download",
+  "277": "This page regularly syncs the latest built Nukkit-MOT kernel from the official MOT Jenkins, and may delete older build versions.",
+  "278": "If you want to download the kernel from the official Jenkins, please visit"
 }

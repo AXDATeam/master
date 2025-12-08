@@ -4,6 +4,6 @@ var latest = http.get("https://down.axda.net/lastBuild").body();
 var list = http.get("https://down.axda.net/list.hsp").body();
 var data = {
     latest: latest,
-    list: list
+    list: JSON.parse(list),
 };
 echo(data);
