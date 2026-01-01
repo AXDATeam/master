@@ -123,11 +123,11 @@ $("body").append(`
         </mdui-text-field>
         </form>
         <div class="mdui-prose ver-center">
-            <mdui-checkbox checked class="mt-4 login-input l" lang="195" id="login-protocol" onclick="$('#login-button').prop('disabled', $('#login-protocol').prop('checked'))">阅读并同意</mdui-checkbox>
+            <mdui-checkbox checked class="mt-4 login-input l" lang="195" id="login-protocol" onclick="$('.login-l').prop('disabled', $('#login-protocol').prop('checked'))">阅读并同意</mdui-checkbox>
             <a href="/docs/license" style="font-size:14px;margin-top:1px;" class="l" lang="196">用户协议</a>
         </div>
-        <mdui-button class="mt-4 l" full-width onclick="api_login()" id="login-button" lang="10">登录</mdui-button>
-        <mdui-button class="mt-2" full-width onclick="minebbs_oauth()">
+        <mdui-button class="mt-4 l login-l" full-width onclick="api_login()" id="login-button" lang="10">登录</mdui-button>
+        <mdui-button class="mt-2 login-l" full-width onclick="minebbs_oauth()">
             <div class="l" lang="192">使用MineBBS账户登录</div>
             <mdui-icon slot="icon" src="/images/minebbs.svg"></mdui-icon>
         </mdui-button>
