@@ -8,10 +8,28 @@ data.code = 2000;
 
 var dbx = {
     insert: function(table, data) {
-        var sql = "INSERT INTO `" + table + "` (";
-        var length = Object.keys(data).length;
-        var f = true;
+        // 确保数据类型兼容，过滤掉可能引起问题的对象
+        var cleanData = {};
         for (var key in data) {
+            var value = data[key];
+            // 如果是对象，尝试转换为字符串
+            if (typeof value === 'object' && value !== null) {
+                if (value.constructor.name === 'PolyglotMap' || value.toString().indexOf('Polyglot') !== -1) {
+                    // 将Polyglot对象转换为字符串表示
+                    cleanData[key] = JSON.stringify(value);
+                } else {
+                    // 对于普通对象，也尝试序列化
+                    cleanData[key] = typeof value === 'string' ? value : JSON.stringify(value);
+                }
+            } else {
+                cleanData[key] = value;
+            }
+        }
+        
+        var sql = "INSERT INTO `" + table + "` (";
+        var length = Object.keys(cleanData).length;
+        var f = true;
+        for (var key in cleanData) {
             if (!f) {
                 sql += ",";
             } else {
@@ -26,17 +44,35 @@ var dbx = {
         sql += "?);";
         stmt = db.prepare(sql);
         var i = 1;
-        for (var key in data) {
-            stmt.set(i, data[key]);
+        for (var key in cleanData) {
+            stmt.set(i, cleanData[key]);
             i++;
         }
         stmt.executeUpdate();
         stmt.close();
     },
     update: function(table, data, where_key, where_value, limit = 0, status = -1) {
+        // 确保数据类型兼容，过滤掉可能引起问题的对象
+        var cleanData = {};
+        for (var key in data) {
+            var value = data[key];
+            // 如果是对象，尝试转换为字符串
+            if (typeof value === 'object' && value !== null) {
+                if (value.constructor.name === 'PolyglotMap' || value.toString().indexOf('Polyglot') !== -1) {
+                    // 将Polyglot对象转换为字符串表示
+                    cleanData[key] = JSON.stringify(value);
+                } else {
+                    // 对于普通对象，也尝试序列化
+                    cleanData[key] = typeof value === 'string' ? value : JSON.stringify(value);
+                }
+            } else {
+                cleanData[key] = value;
+            }
+        }
+        
         var sql = "UPDATE `" + table + "` SET ";
         var f = true;
-        for (var key in data) {
+        for (var key in cleanData) {
             if (!f) {
                 sql += ",";
             } else {
@@ -55,8 +91,8 @@ var dbx = {
         }
         var pre = db.prepare(sql);
         var i = 1;
-        for (var key in data) {
-            pre.set(i, data[key]);
+        for (var key in cleanData) {
+            pre.set(i, cleanData[key]);
             i++;
         }
         if (limit > 0) {
