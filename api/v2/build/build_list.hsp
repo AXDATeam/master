@@ -2,7 +2,7 @@
 include("api/v2/includes/main.hsp");
 var post = getPost();
 
-if (isOwner()) {
+if (isOwner(post.index)) {
     let pre = db.prepare(getSql(post.display));
     pre.set(1, post.index);
     if (post.display != "all") {}
